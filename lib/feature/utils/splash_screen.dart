@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../core/constant/app_assets.dart';
 import '../../core/routing/app_routes.dart';
 
@@ -40,7 +41,7 @@ class _SplashScreenState extends State<SplashScreen> {
               curve: Curves.easeOutBack,
               builder: (context, value, child) {
                 return Opacity(
-                  opacity: value,
+                  opacity: value.clamp(0.0, 1.0),
                   child: Transform.scale(
                     scale: value,
                     child: child,
@@ -49,7 +50,7 @@ class _SplashScreenState extends State<SplashScreen> {
               },
               child: Image.asset(
                 AppAssets.appLogoImg,
-                width: 200,
+                width: 220.w,
               ),
             ),
           ),

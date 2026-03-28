@@ -95,7 +95,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                               curve: Curves.easeInOut,
                             );
                           } else {
-                            Navigator.pushReplacementNamed(context, AppRoutes.login);
+                            Navigator.pushReplacementNamed(context, AppRoutes.welcome);
                           }
                         },
                         child: Container(
@@ -113,11 +113,6 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                       ),
                   ],
                 ),
-              ),
-              Image.asset(
-                AppAssets.relationBack,
-                width: double.infinity,
-                fit: BoxFit.fitWidth,
               ),
             ],
           ),
@@ -139,10 +134,10 @@ class OnBoardingPage extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Spacer(flex: 3),
+          const Spacer(flex: 4),
           SvgPicture.asset(
             model.image,
-            height: 250.h,
+            height: 240.h,
           ),
           const Spacer(),
           Text(
@@ -159,11 +154,11 @@ class OnBoardingPage extends StatelessWidget {
             model.description,
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: 16.sp,
+              fontSize: 20.sp,
               color: AppColors.neutral600,
             ),
           ),
-          const Spacer(flex: 4),
+          const Spacer(flex: 5),
         ],
       ),
     );

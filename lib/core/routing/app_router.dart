@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../feature/user/auth/login/ui/login_screen.dart';
+import '../../feature/utils/welcome_screen.dart';
 import '../../../feature/utils/onBoarding_screen.dart';
 import '../../../feature/utils/splash_screen.dart';
 import 'app_routes.dart';
@@ -14,8 +14,8 @@ Route<dynamic> onGenerateAppRoute(RouteSettings settings) {
     case AppRoutes.onBoarding:
       return MaterialPageRoute(builder: (_) => const OnBoardingScreen());
 
-    case AppRoutes.login:
-      return MaterialPageRoute(builder: (_) => const LoginScreen());
+    case AppRoutes.welcome:
+      return MaterialPageRoute(builder: (_) => const WelcomeScreen());
 
     default:
       return MaterialPageRoute(
