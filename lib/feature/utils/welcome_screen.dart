@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../core/constant/app_assets.dart';
 import '../../core/constant/app_colors.dart';
 import '../../core/constant/app_texts.dart';
+import '../../core/routing/app_routes.dart';
 import '../../core/widgets/app_bounce_button.dart';
 
 
@@ -58,7 +59,9 @@ class WelcomeScreen extends StatelessWidget {
                   SizedBox(height: 40.h),
 
                   AppBounceButton.elevated(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.of(context).pushNamed(AppRoutes.register);
+                    },
                     label: AppTexts.loginNewAccount,
                   ),
                   SizedBox(height: 16.h),

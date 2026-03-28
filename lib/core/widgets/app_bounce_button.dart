@@ -135,7 +135,7 @@ class AppBounceButton extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
   final AlignmentGeometry alignment;
 
-  /// Optional shadow for [AppBounceButtonVariant.elevated] only. Default: none (flat).
+
   final List<BoxShadow>? boxShadow;
 
   final Duration? bounceDuration;
@@ -231,8 +231,6 @@ class AppBounceButton extends StatelessWidget {
 
     return Bounce(
       onTap: onPressed,
-      duration: bounceDuration ?? const Duration(milliseconds: 400),
-      tapDelay: bounceTapDelay ?? const Duration(milliseconds: 150),
       scaleFactor: bounceScaleFactor,
       tilt: bounceTilt,
       child: tappable,
