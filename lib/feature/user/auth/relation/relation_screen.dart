@@ -4,7 +4,7 @@ import '../../../../core/constant/app_assets.dart';
 import '../../../../core/constant/app_colors.dart';
 import '../../../../core/constant/app_texts.dart';
 import '../../../../core/widgets/app_bounce_button.dart';
-import 'widgets/relation_step_widgets.dart';
+import 'widgets/relation_widgets.dart';
 import 'relation_success_screen.dart';
 
 class RelationScreen extends StatefulWidget {
@@ -124,7 +124,6 @@ class _RelationScreenState extends State<RelationScreen> {
 
   Widget _buildStepContent(int step) {
     final bool isCompleted = currentStep > step;
-    final bool isActive = currentStep == step;
 
     if (step == 1) {
       return RelationStepCard(
@@ -132,9 +131,9 @@ class _RelationScreenState extends State<RelationScreen> {
         title: AppTexts.relationStep1Title,
         subtitle: AppTexts.relationStep1Subtitle,
         isCompleted: isCompleted,
-        showLine: currentStep >= 2, // Only show line if next step is visible
+        showLine: currentStep >= 2,
         child: isCompleted
-            ? _CompletedView(text: selectedRelationship ?? 'أنا أحد أفراد العائلة')
+            ? _CompletedView(text: selectedRelationship ?? AppTexts.relationRelationshipDefault)
             : RelationshipSelectionStep(
                 onSelected: (val) {
                   setState(() => selectedRelationship = val);
@@ -150,7 +149,7 @@ class _RelationScreenState extends State<RelationScreen> {
         isCompleted: isCompleted,
         showLine: currentStep >= 3,
         child: isCompleted
-            ? _CompletedView(text: selectedBranch ?? 'فرع السالمي')
+            ? _CompletedView(text: selectedBranch ?? AppTexts.relationBranchDefault)
             : BranchSelectionStep(
                 onSelected: (val) {
                   setState(() => selectedBranch = val);
@@ -166,7 +165,7 @@ class _RelationScreenState extends State<RelationScreen> {
         isCompleted: isCompleted,
         showLine: currentStep >= 4,
         child: isCompleted
-            ? _CompletedView(text: selectedFather ?? 'عبد الرحمن مجاهد')
+            ? _CompletedView(text: selectedFather ?? AppTexts.relationFatherDefault)
             : FatherSearchStep(
                 onSelected: (val) {
                   setState(() => selectedFather = val);
@@ -182,9 +181,9 @@ class _RelationScreenState extends State<RelationScreen> {
         isCompleted: false,
         showLine: false,
         child: VerificationStep(
-          relationship: 'أنا أحد أفراد العائلة',
-          branch: selectedBranch ?? 'فرع السالمي',
-          fatherName: selectedFather ?? 'عبد الرحمن مجاهد',
+          relationship: selectedRelationship ?? AppTexts.relationRelationshipDefault,
+          branch: selectedBranch ?? AppTexts.relationBranchDefault,
+          fatherName: selectedFather ?? AppTexts.relationFatherDefault,
           onContinue: () {},
         ),
       );

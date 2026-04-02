@@ -19,7 +19,7 @@ class AppTexts {
   static const String registerPhone = 'رقم الجوال';
   static const String registerBirthDate = 'تاريخ الميلاد';
   static const String registerCity = 'المدينة';
-  static const String registerSubmit = 'تسجيل';
+  static const String registerSubmit = 'متابعه';
   static const String registerPrivacyPrefix = 'تسجيلك بالتطبيق توافق علي ';
   static const String registerPrivacyLink = 'سياسة وشروط الخصوصية';
   static const String registerHaveAccount = 'لديك حساب؟ ';
@@ -56,6 +56,25 @@ class AppTexts {
       'قم بمراجعة معلوماتك والتأكد منها بشكل صحيح لإتمام انضمامك للعائلة';
   static const String relationConfirm = 'تاكيد';
   static const String relationContinue = 'متابعة';
+
+  // Relation - defaults & labels
+  static const String relationRelationshipDefault = 'آنا آحد آفراد الآسرة';
+  static const String relationBranchDefault = 'فرع السالمي';
+  static const String relationFatherDefault = 'عبد الرحمن مجاهد';
+  static const String relationVerificationRelationshipLabel = 'العلاقة';
+  static const String relationVerificationBranchLabel = 'الفرع';
+  static const String relationVerificationFatherLabel = 'الاب';
+
+  // Relation - step 1 options
+  static const String relationRelationshipOption1 = 'آنا آحد آفراد الآسرة';
+  static const String relationRelationshipOption2 = 'آمي/جدتي من الآسرة';
+  static const String relationRelationshipOption3 = 'زوجي/زوجتي من الآسرة';
+  static const String relationRelationshipOption4 = 'آحد آقاربي من الآسرة';
+  static const String relationRelationshipOption5 = 'آخري';
+
+  // Relation - step 3
+  static const String relationFatherSearchHint = 'عبد الرحمن';
+  static const String relationDidYouMean = 'هل تقصد';
 
   // Success / Review
   static const String relationSuccessTitle = 'طلبك قيد المراجعة';
