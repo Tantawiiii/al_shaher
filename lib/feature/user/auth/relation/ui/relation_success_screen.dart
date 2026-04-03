@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../../../core/constant/app_assets.dart';
-import '../../../../core/constant/app_colors.dart';
-import '../../../../core/constant/app_texts.dart';
-import '../../../../core/widgets/app_bounce_button.dart';
+import '../../../../../core/constant/app_colors.dart';
+import '../../../../../core/constant/app_texts.dart';
+import '../../../../../core/widgets/app_bounce_button.dart';
+import '../../register/data/models/application_form_summary.dart';
 import 'order_details_screen.dart';
 
 class RelationSuccessScreen extends StatelessWidget {
-  const RelationSuccessScreen({super.key});
+  const RelationSuccessScreen({super.key, required this.summary});
+
+  final ApplicationFormSummary summary;
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +26,7 @@ class RelationSuccessScreen extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Icon/Image
+
               Container(
                 width: 100.r,
                 height: 100.r,
@@ -65,7 +67,10 @@ class RelationSuccessScreen extends StatelessWidget {
                 onPressed: () {
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (_) => const OrderDetailsScreen()),
+                    MaterialPageRoute<void>(
+                      builder: (_) =>
+                          OrderDetailsScreen(summary: summary),
+                    ),
                   );
                 },
                 label: AppTexts.relationSuccessOk,

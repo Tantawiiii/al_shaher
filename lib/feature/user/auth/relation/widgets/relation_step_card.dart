@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../core/constant/app_colors.dart';
+import '../../../../../core/constant/app_texts.dart';
 
 class RelationStepCard extends StatelessWidget {
   const RelationStepCard({
@@ -11,6 +12,7 @@ class RelationStepCard extends StatelessWidget {
     required this.child,
     this.isCompleted = false,
     this.showLine = true,
+    this.onEdit,
   });
 
   final String stepNumber;
@@ -19,6 +21,7 @@ class RelationStepCard extends StatelessWidget {
   final Widget child;
   final bool isCompleted;
   final bool showLine;
+  final VoidCallback? onEdit;
 
   @override
   Widget build(BuildContext context) {
@@ -52,14 +55,38 @@ class RelationStepCard extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(
-                title,
-                textAlign: TextAlign.right,
-                style: TextStyle(
-                  fontSize: 18.sp,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.primaryColor700,
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  if (isCompleted && onEdit != null)
+                    TextButton(
+                      onPressed: onEdit,
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.zero,
+                        minimumSize: Size.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      child: Text(
+                        AppTexts.relationEdit,
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          color: AppColors.accentGold600,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    )
+                  else
+                    const SizedBox.shrink(),
+                  Text(
+                    title,
+                    textAlign: TextAlign.right,
+                    style: TextStyle(
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.primaryColor700,
+                    ),
+                  ),
+                ],
               ),
               SizedBox(height: 8.h),
               Text(

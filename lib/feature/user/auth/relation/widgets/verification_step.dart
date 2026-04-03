@@ -8,13 +8,11 @@ class VerificationStep extends StatelessWidget {
     required this.relationship,
     required this.branch,
     required this.fatherName,
-    required this.onContinue,
   });
 
   final String relationship;
   final String branch;
   final String fatherName;
-  final VoidCallback onContinue;
 
   @override
   Widget build(BuildContext context) {

@@ -59,14 +59,12 @@ class WelcomeScreen extends StatelessWidget {
                   SizedBox(height: 40.h),
 
                   AppBounceButton.elevated(
-                    onPressed: () {
-                      Navigator.of(context).pushNamed(AppRoutes.register);
-                    },
+                    onPressed: () => Navigator.of(context).pushNamed(AppRoutes.register),
                     label: AppTexts.loginNewAccount,
                   ),
                   SizedBox(height: 16.h),
                   AppBounceButton.outlined(
-                    onPressed: () {},
+                    onPressed:  () => Navigator.of(context).pushNamed(AppRoutes.login),
                     label: AppTexts.loginSignIn,
                   ),
                   const Spacer(),
