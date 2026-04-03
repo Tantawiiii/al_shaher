@@ -12,7 +12,7 @@ class HomeScreen extends StatelessWidget {
       backgroundColor: AppColors.neutral50,
       body: SingleChildScrollView(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Stack(
               clipBehavior: Clip.none,
@@ -20,15 +20,15 @@ class HomeScreen extends StatelessWidget {
               children: [
                 const HomeHeader(),
                 Positioned(
-                  top: MediaQuery.of(context).padding.top + 70.h,
-                  left: 20.w,
-                  right: 20.w,
+                  top: MediaQuery.of(context).padding.top + 80.h,
+                  left: 16.w,
+                  right: 16.w,
                   child: const QuickLinksCard(),
                 ),
               ],
             ),
 
-            SizedBox(height: 70.h),
+            SizedBox(height: 100.h),
             const RecentlyAddedSection(),
             SizedBox(height: 24.h),
             const FamilyNewsSection(),

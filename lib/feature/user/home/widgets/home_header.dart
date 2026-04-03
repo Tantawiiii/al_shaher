@@ -1,5 +1,7 @@
+import 'package:bounce/bounce.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../../core/constant/app_assets.dart';
 import '../../../../../core/constant/app_colors.dart';
@@ -14,33 +16,33 @@ class HomeHeader extends StatelessWidget {
       color: AppColors.primaryColor700,
       padding: EdgeInsets.only(
         top: MediaQuery.of(context).padding.top + 16.h,
-        left: 20.w,
-        right: 20.w,
-        bottom: 70.h, // Space for the overlapping quick links
+        left: 16.w,
+        right: 16.w,
+        bottom: 70.h,
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          Bounce(
+            onTap: (){},
+            child: SvgPicture.asset(
+                AppAssets.menuIcon,
+              width: 26.w,
+              height: 26.h,
+            ),),
+          Image.asset(
+            AppAssets.appLogoImg,
+            height: 48.h,
+          ),
           IconButton(
             onPressed: () {},
             icon: Icon(
               Icons.notifications_none_rounded,
               color: AppColors.white,
-              size: 28.sp,
+              size: 24.sp,
             ),
           ),
-          Image.asset(
-            AppAssets.appLogoImg,
-            height: 40.h,
-          ),
-          IconButton(
-            onPressed: () {},
-            icon: Icon(
-              Icons.menu_rounded,
-              color: AppColors.white,
-              size: 32.sp,
-            ),
-          ),
+
         ],
       ),
     );

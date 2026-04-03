@@ -1,3 +1,6 @@
+import 'package:al_shaher/core/constant/app_texts.dart';
+import 'package:al_shaher/core/routing/app_routes.dart';
+import 'package:bounce/bounce.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../core/constant/app_colors.dart';
@@ -8,7 +11,7 @@ class QuickLinksCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
+      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 20.h),
       decoration: BoxDecoration(
         color: AppColors.white,
         borderRadius: BorderRadius.circular(16.r),
@@ -26,22 +29,26 @@ class QuickLinksCard extends StatelessWidget {
         children: [
           _QuickLinkItem(
             icon: Icons.people_outline_rounded,
-            title: 'شجرة العائلة',
-            onTap: () {},
+            title: AppTexts.familyTree,
+            onTap: () {
+              Navigator.pushNamed(context, AppRoutes.familyTree);
+            },
           ),
           _QuickLinkItem(
             icon: Icons.calendar_month_outlined,
-            title: 'المناسبات',
-            onTap: () {},
+            title: AppTexts.events,
+            onTap: () {
+              Navigator.pushNamed(context, AppRoutes.events);
+            },
           ),
           _QuickLinkItem(
             icon: Icons.article_outlined,
-            title: 'الاخبار',
+            title: AppTexts.news,
             onTap: () {},
           ),
           _QuickLinkItem(
             icon: Icons.edit_document,
-            title: 'تقديم طلب',
+            title: AppTexts.orderRequest,
             onTap: () {},
           ),
         ],
@@ -63,9 +70,8 @@ class _QuickLinkItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    return Bounce(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12.r),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -86,8 +92,8 @@ class _QuickLinkItem extends StatelessWidget {
           Text(
             title,
             style: TextStyle(
-              fontSize: 13.sp,
-              fontWeight: FontWeight.w600,
+              fontSize: 15.sp,
+              fontWeight: FontWeight.w400,
               color: AppColors.neutral700,
             ),
           ),

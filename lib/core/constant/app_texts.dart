@@ -117,5 +117,56 @@ class AppTexts {
   static const String name =  'الاسم';
   static const String nationalId =  'رقم الهوية';
   static const String city =  'المدينة';
+  static const String familyTree =  'شجرة العائلة';
+  static const String events = 'المناسبات';
+  static const String news = 'الاخبار';
+  static const String orderRequest = 'تقديم طلب';
+  static const String newComers =  'المضافون حديثا';
+  static const String familyNews =  'اخبار العائلة';
 
+  // Family Tree
+  static const String treeTitle = 'شجرة العائلة';
+  static const String treeSearchHint = 'بحث بالاسم';
+  static const String treeDeceased = 'متوفي';
+  static const String treeAddChild = 'إضافة فرد';
+  static const String treeBranch = 'الفرع';
+  static const String treeNoData = 'لا توجد بيانات';
+  static const String treeLoading = 'جاري تحميل الشجرة...';
+
+  // Events
+  static const String eventsLoading = 'جاري تحميل المناسبات...';
+  static const String eventsEmpty = 'لا توجد مناسبات حالياً';
+  static const String eventsList = 'قائمة';
+  static const String eventsCalendar = 'تقويم';
+  static const String eventsDetails = 'تفاصيل المناسبة';
+  static const String eventsDate = 'التاريخ';
+  static const String eventsTime = 'الوقت';
+  static const String eventsLocation = 'الموقع';
+  static const String eventsStatistics = 'الإحصائيات';
+  static const String eventsTotal = 'الإجمالي';
+  static const String eventsAttending = 'سأحضر';
+  static const String eventsNotAttending = 'لن أحضر';
+  static const String eventsPending = 'ربما';
+  static const String eventsMyAttendance = 'حالة الحضور الخاصة بي';
+  static const String eventsAddNote = 'إضافة ملاحظة';
+  static const String eventsNoteHint = 'اكتب ملاحظتك هنا (اختياري)...';
+  static const String eventsAttendees = 'الحاضرون';
+  static const String eventsAdd = 'إضافة مناسبة';
+  static const String eventsEdit = 'تعديل المناسبة';
+  static const String eventsDelete = 'حذف المناسبة';
+  static const String eventsDeleteConfirm = 'تأكيد الحذف';
+  static const String eventsDeleteMessage = 'هل أنت متأكد من حذف هذه المناسبة؟';
+  static const String eventsCancel = 'إلغاء';
+  static const String eventsName = 'اسم المناسبة';
+  static const String eventsNameHint = 'مثال: حفل زفاف';
+  static const String eventsDescription = 'الوصف';
+  static const String eventsDescriptionHint = 'اكتب وصفاً للمناسبة...';
+  static const String eventsLocationHint = 'مثال: قاعة الأفراح';
+  static const String eventsSelectDate = 'اختر التاريخ';
+  static const String eventsSelectTime = 'اختر الوقت';
+  static const String eventsRequired = 'هذا الحقل مطلوب';
+  static const String eventsSubmit = 'إضافة';
+  static const String eventsUpdate = 'تعديل';
+  static const String eventsAdded = 'تم إضافة المناسبة بنجاح';
+  static const String eventsUpdated = 'تم تعديل المناسبة بنجاح';
 }
