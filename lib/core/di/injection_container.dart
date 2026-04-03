@@ -4,9 +4,13 @@ import 'package:al_shaher/feature/user/auth/register/data/register_remote_data_s
 import 'package:al_shaher/feature/user/auth/register/cubit/register_cubit.dart';
 import 'package:al_shaher/feature/user/auth/relation/cubit/branch_cubit.dart';
 import 'package:al_shaher/feature/user/auth/relation/cubit/father_cubit.dart';
+import 'package:al_shaher/feature/user/tree/data/tree_remote_data_source.dart';
+import 'package:al_shaher/feature/user/events/data/events_remote_data_source.dart';
+import 'package:al_shaher/feature/user/events/cubit/events_cubit.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../feature/user/tree/cubit/tree_cubit.dart';
 import '../network/dio_client.dart';
 import '../network/network_service.dart';
 
@@ -43,4 +47,21 @@ Future<void> configureDependencies() async {
       sl<AuthLocalStorage>(),
     ),
   );
+
+  // Tree feature
+  sl.registerLazySingleton<TreeRemoteDataSource>(
+    () => TreeRemoteDataSource(sl<NetworkService>(), sl<AuthLocalStorage>()),
+  );
+  sl.registerFactory<TreeCubit>(
+    () => TreeCubit(sl<TreeRemoteDataSource>()),
+  );
+
+  // Events feature
+  sl.registerLazySingleton<EventsRemoteDataSource>(
+    () => EventsRemoteDataSource(sl<NetworkService>(), sl<AuthLocalStorage>()),
+  );
+  sl.registerFactory<EventsCubit>(
+    () => EventsCubit(sl<EventsRemoteDataSource>()),
+  );
 }
+

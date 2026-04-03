@@ -17,4 +17,8 @@ final class AppAssets {
   static const String onboard2 = 'assets/svg/onboard2.svg';
   static const String onboard3 = 'assets/svg/onboard3.svg';
   static const String saudiArabia = 'assets/svg/saudi-arabia.svg';
+  static const String menuIcon = 'assets/svg/Menu_Alt_01.svg';
+  static const String downloadIcon = 'assets/svg/Download.svg';
+  static const String zoomInIcon = 'assets/svg/zoom_in.svg';
+  static const String zoomOutIcon = 'assets/svg/zoom_out.svg';
 }

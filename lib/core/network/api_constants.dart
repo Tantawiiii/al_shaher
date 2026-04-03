@@ -17,4 +17,12 @@ class ApiEndpoints {
   static const String branchIndex = '/branch/index';
   static const String memberIndex = '/member/index';
   static const String login = '/login';
+  static const String membersTree = '/members/tree';
+  static const String checkAuth = '/check-auth';
+
+  // Events
+  static const String event = '/event';
+  static const String eventIndex = '/event/index';
+  static const String eventDelete = '/event/delete';
+  static const String eventAttendance = '/event-attendance';
 }
