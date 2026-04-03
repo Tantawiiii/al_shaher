@@ -1,6 +1,10 @@
 import 'dart:async';
+
+import 'package:al_shaher/core/di/injection_container.dart';
+import 'package:al_shaher/core/storage/auth_local_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import '../../core/constant/app_assets.dart';
 import '../../core/routing/app_routes.dart';
 
@@ -15,11 +19,18 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Timer(const Duration(seconds: 3), () {
-      if (mounted) {
-        Navigator.pushReplacementNamed(context, AppRoutes.onBoarding);
-      }
-    });
+    unawaited(_bootstrap());
+  }
+
+  Future<void> _bootstrap() async {
+    await Future<void>.delayed(const Duration(seconds: 3));
+    if (!mounted) return;
+
+    final hasToken = sl<AuthLocalStorage>().hasToken;
+    final next = hasToken ? AppRoutes.home : AppRoutes.onBoarding;
+
+    if (!mounted) return;
+    Navigator.pushReplacementNamed(context, next);
   }
 
   @override
@@ -27,7 +38,6 @@ class _SplashScreenState extends State<SplashScreen> {
     return Scaffold(
       body: Stack(
         children: [
-
           Positioned.fill(
             child: Image.asset(
               AppAssets.splashBack,

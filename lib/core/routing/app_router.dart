@@ -1,8 +1,15 @@
+import 'package:al_shaher/feature/user/auth/login/cubit/login_cubit.dart';
+import 'package:al_shaher/feature/user/auth/login/ui/login_screen.dart';
+import 'package:al_shaher/feature/user/home/home_screen.dart';
 import 'package:flutter/material.dart';
-import '../../feature/user/auth/register/register_screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../feature/user/auth/register/cubit/register_cubit.dart';
+import '../../feature/user/auth/register/ui/register_screen.dart';
+import '../../feature/utils/onBoarding_screen.dart';
+import '../../feature/utils/splash_screen.dart';
 import '../../feature/utils/welcome_screen.dart';
-import '../../../feature/utils/onBoarding_screen.dart';
-import '../../../feature/utils/splash_screen.dart';
+import '../di/injection_container.dart';
 import 'app_routes.dart';
 
 
@@ -19,7 +26,23 @@ Route<dynamic> onGenerateAppRoute(RouteSettings settings) {
       return MaterialPageRoute(builder: (_) => const WelcomeScreen());
 
     case AppRoutes.register:
-      return MaterialPageRoute(builder: (_) => const RegisterScreen());
+      return MaterialPageRoute(
+        builder: (_) => BlocProvider(
+          create: (_) => sl<RegisterCubit>(),
+          child: const RegisterScreen(),
+        ),
+      );
+
+    case AppRoutes.login:
+      return MaterialPageRoute(
+        builder: (_) => BlocProvider(
+          create: (_) => sl<LoginCubit>(),
+          child: const LoginScreen(),
+        ),
+      );
+
+    case AppRoutes.home:
+      return MaterialPageRoute(builder: (_) => const HomeScreen());
 
     default:
       return MaterialPageRoute(

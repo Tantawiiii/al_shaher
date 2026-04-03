@@ -19,7 +19,14 @@ class AppTexts {
   static const String registerPhone = 'رقم الجوال';
   static const String registerBirthDate = 'تاريخ الميلاد';
   static const String registerCity = 'المدينة';
+  static const String registerPassword = 'كلمة المرور';
+  static const String registerGender = 'الجنس';
+  static const String registerGenderMale = 'ذكر';
+  static const String registerGenderFemale = 'أنثى';
   static const String registerSubmit = 'متابعه';
+  static const String registerUploading = 'جاري رفع الصورة...';
+  static const String registerValidationError = 'يرجى تعبئة جميع الحقول';
+  static const String registerImageRequired = 'يرجى اختيار صورة شخصية';
   static const String registerPrivacyPrefix = 'تسجيلك بالتطبيق توافق علي ';
   static const String registerPrivacyLink = 'سياسة وشروط الخصوصية';
   static const String registerHaveAccount = 'لديك حساب؟ ';
@@ -56,6 +63,7 @@ class AppTexts {
       'قم بمراجعة معلوماتك والتأكد منها بشكل صحيح لإتمام انضمامك للعائلة';
   static const String relationConfirm = 'تاكيد';
   static const String relationContinue = 'متابعة';
+  static const String relationEdit = 'تعديل';
 
   // Relation - defaults & labels
   static const String relationRelationshipDefault = 'آنا آحد آفراد الآسرة';
@@ -75,6 +83,11 @@ class AppTexts {
   // Relation - step 3
   static const String relationFatherSearchHint = 'عبد الرحمن';
   static const String relationDidYouMean = 'هل تقصد';
+  static const String relationRetry = 'إعادة المحاولة';
+  static const String relationNoBranches = 'لا توجد فروع';
+  static const String relationNoFathers = 'لا يوجد آباء لهذا الفرع';
+  static const String relationSelectBranchFirst = 'اختر الفرع أولاً';
+  static const String relationSubmitting = 'جاري الإرسال...';
 
   // Success / Review
   static const String relationSuccessTitle = 'طلبك قيد المراجعة';
@@ -86,4 +99,23 @@ class AppTexts {
   static const String orderDetailsHeader = 'تفاصيل الطلب';
   static const String orderDetailsStatus = 'قيد المراجعة';
   static const String orderDetailsServiceType = 'طلب انضمام لتطبيق خالد ال شاهر';
+  static const String orderDetailsPhone = 'رقم الجوال';
+  static const String orderDetailsBirthDate = 'تاريخ الميلاد';
+  static const String orderDetailsGender = 'الجنس';
+  static const String orderDetailsRelationships = 'صلة القرابة';
+  static const String orderDetailsBranch = 'فرع العائلة';
+  static const String orderDetailsFather = 'اسم الأب';
+  static const String orderDetailsBranchId = 'رقم الفرع';
+  static const String orderDetailsFatherId = 'رقم الأب (المعرّف)';
+  static const String orderDetailsImageId = 'معرّف الصورة';
+  static const String orderDetailsGenderMale = 'ذكر';
+  static const String orderDetailsGenderFemale = 'أنثى';
+
+
+  static const String orderNumber =  'رقم الطلب';
+  static const String serviceType =  'نوع الخدمة';
+  static const String name =  'الاسم';
+  static const String nationalId =  'رقم الهوية';
+  static const String city =  'المدينة';
+
 }

@@ -6,7 +6,10 @@ import '../constant/app_colors.dart';
 
 /// Rounded filled text field for auth/forms: RTL-friendly, optional [leadingIcon]
 /// (visual right in Arabic), optional [trailing] (visual left), optional helper below.
-class AppFormTextField extends StatelessWidget {
+///
+/// When [showPasswordToggle] is true and [obscureText] is true, a suffix eye icon
+/// toggles masking without changing the controller.
+class AppFormTextField extends StatefulWidget {
   const AppFormTextField({
     super.key,
     this.controller,
@@ -18,6 +21,7 @@ class AppFormTextField extends StatelessWidget {
     this.keyboardType,
     this.textInputAction,
     this.obscureText = false,
+    this.showPasswordToggle = false,
     this.enabled = true,
     this.onChanged,
     this.inputFormatters,
@@ -43,6 +47,7 @@ class AppFormTextField extends StatelessWidget {
   final TextInputType? keyboardType;
   final TextInputAction? textInputAction;
   final bool obscureText;
+  final bool showPasswordToggle;
   final bool enabled;
   final ValueChanged<String>? onChanged;
   final List<TextInputFormatter>? inputFormatters;
@@ -59,43 +64,106 @@ class AppFormTextField extends StatelessWidget {
   final double? borderWidth;
 
   @override
-  Widget build(BuildContext context) {
-    final radius = borderRadius ?? 30.r;
-    final fill = fillColor ?? AppColors.neutral100;
-    final unfocused = unfocusedBorderColor ?? Colors.transparent;
-    final focused = focusedBorderColor ?? AppColors.primaryColor600;
-    final bw = borderWidth ?? 1.5;
+  State<AppFormTextField> createState() => _AppFormTextFieldState();
+}
 
-    final pad = contentPadding ??
+class _AppFormTextFieldState extends State<AppFormTextField> {
+  bool _passwordHidden = true;
+
+  @override
+  void didUpdateWidget(AppFormTextField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!widget.obscureText && oldWidget.obscureText) {
+      _passwordHidden = true;
+    }
+  }
+
+  bool get _effectiveObscure {
+    if (!widget.showPasswordToggle || !widget.obscureText) {
+      return widget.obscureText;
+    }
+    return _passwordHidden;
+  }
+
+  Widget? _buildSuffixIcon() {
+    final hasToggle = widget.showPasswordToggle && widget.obscureText;
+    if (!hasToggle && widget.trailing == null) return null;
+
+    final toggle = hasToggle
+        ? IconButton(
+            onPressed: () => setState(() => _passwordHidden = !_passwordHidden),
+            style: IconButton.styleFrom(
+              foregroundColor: AppColors.neutral400,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+            icon: Icon(
+              _passwordHidden
+                  ? Icons.visibility_outlined
+                  : Icons.visibility_off_outlined,
+              size: 22.sp,
+            ),
+            tooltip: _passwordHidden ? 'Show password' : 'Hide password',
+          )
+        : null;
+
+    if (widget.trailing == null) {
+      return Padding(
+        padding: EdgeInsetsDirectional.only(end: 4.w),
+        child: toggle,
+      );
+    }
+    if (toggle == null) {
+      return Padding(
+        padding: EdgeInsetsDirectional.only(end: 8.w),
+        child: widget.trailing,
+      );
+    }
+
+    return Padding(
+      padding: EdgeInsetsDirectional.only(end: 8.w),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [widget.trailing!, toggle],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final w = widget;
+    final radius = w.borderRadius ?? 30.r;
+    final fill = w.fillColor ?? AppColors.neutral100;
+    final unfocused = w.unfocusedBorderColor ?? Colors.transparent;
+    final focused = w.focusedBorderColor ?? AppColors.primaryColor600;
+    final bw = w.borderWidth ?? 1.5;
+
+    final pad =
+        w.contentPadding ??
         EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h);
 
-    final hintS = hintStyle ??
-        TextStyle(
-          fontSize: 15.sp,
-          color: AppColors.neutral400,
-        );
-    final textS = textStyle ??
-        TextStyle(
-          fontSize: 15.sp,
-          color: AppColors.neutral900,
-        );
+    final hintS =
+        w.hintStyle ?? TextStyle(fontSize: 15.sp, color: AppColors.neutral400);
+    final textS =
+        w.textStyle ?? TextStyle(fontSize: 15.sp, color: AppColors.neutral900);
+
+    final suffix = _buildSuffixIcon();
 
     final field = TextField(
-      controller: controller,
-      focusNode: focusNode,
-      keyboardType: keyboardType,
-      textInputAction: textInputAction,
-      obscureText: obscureText,
-      enabled: enabled,
-      onChanged: onChanged,
-      inputFormatters: inputFormatters,
-      maxLines: maxLines,
-      readOnly: readOnly,
-      onTap: onTap,
+      controller: w.controller,
+      focusNode: w.focusNode,
+      keyboardType: w.keyboardType,
+      textInputAction: w.textInputAction,
+      obscureText: _effectiveObscure,
+      enabled: w.enabled,
+      onChanged: w.onChanged,
+      inputFormatters: w.inputFormatters,
+      maxLines: w.maxLines,
+      readOnly: w.readOnly,
+      onTap: w.onTap,
       textAlign: TextAlign.right,
       style: textS,
       decoration: InputDecoration(
-        hintText: hintText,
+        hintText: w.hintText,
         hintStyle: hintS,
         filled: true,
         fillColor: fill,
@@ -106,7 +174,10 @@ class AppFormTextField extends StatelessWidget {
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(radius),
-          borderSide: BorderSide(color: unfocused, width: unfocused == Colors.transparent ? 0 : bw),
+          borderSide: BorderSide(
+            color: unfocused,
+            width: unfocused == Colors.transparent ? 0 : bw,
+          ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(radius),
@@ -116,30 +187,22 @@ class AppFormTextField extends StatelessWidget {
           borderRadius: BorderRadius.circular(radius),
           borderSide: BorderSide.none,
         ),
-        prefixIcon: leadingIcon != null
+        prefixIcon: w.leadingIcon != null
             ? Padding(
                 padding: EdgeInsetsDirectional.only(start: 12.w, end: 8.w),
                 child: IconTheme.merge(
-                  data: IconThemeData(
-                    color: AppColors.neutral400,
-                    size: 22.sp,
-                  ),
-                  child: leadingIcon!,
+                  data: IconThemeData(color: AppColors.neutral400, size: 22.sp),
+                  child: w.leadingIcon!,
                 ),
               )
             : null,
         prefixIconConstraints: BoxConstraints(minWidth: 48.w, minHeight: 48.h),
-        suffixIcon: trailing != null
-            ? Padding(
-                padding: EdgeInsetsDirectional.only(end: 8.w),
-                child: trailing,
-              )
-            : null,
+        suffixIcon: suffix,
         suffixIconConstraints: BoxConstraints(minHeight: 48.h),
       ),
     );
 
-    if (helperText == null || helperText!.isEmpty) {
+    if (w.helperText == null || w.helperText!.isEmpty) {
       return field;
     }
 
@@ -151,12 +214,9 @@ class AppFormTextField extends StatelessWidget {
         Padding(
           padding: EdgeInsets.only(right: 4.w),
           child: Text(
-            helperText!,
+            w.helperText!,
             textAlign: TextAlign.right,
-            style: TextStyle(
-              fontSize: 12.sp,
-              color: AppColors.neutral400,
-            ),
+            style: TextStyle(fontSize: 12.sp, color: AppColors.neutral400),
           ),
         ),
       ],
