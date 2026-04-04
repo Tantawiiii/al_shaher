@@ -10,15 +10,20 @@ class EventsCubit extends Cubit<EventsState> {
 
   /// Load all events
   Future<void> loadEvents() async {
+    if (isClosed) return;
     emit(state.copyWith(status: EventsStatus.loading, clearError: true));
     try {
       final events = await _remote.fetchEvents();
-      emit(state.copyWith(status: EventsStatus.loaded, events: events));
+      if (!isClosed) {
+        emit(state.copyWith(status: EventsStatus.loaded, events: events));
+      }
     } catch (e) {
-      emit(state.copyWith(
-        status: EventsStatus.error,
-        errorMessage: e.toString().replaceFirst('Exception: ', ''),
-      ));
+      if (!isClosed) {
+        emit(state.copyWith(
+          status: EventsStatus.error,
+          errorMessage: e.toString().replaceFirst('Exception: ', ''),
+        ));
+      }
     }
   }
 
@@ -42,6 +47,7 @@ class EventsCubit extends Cubit<EventsState> {
 
   /// Load event details
   Future<void> loadEventDetails(int eventId) async {
+    if (isClosed) return;
     emit(state.copyWith(
       detailStatus: EventDetailStatus.loading,
       clearDetailError: true,
@@ -49,15 +55,19 @@ class EventsCubit extends Cubit<EventsState> {
     ));
     try {
       final event = await _remote.fetchEventDetails(eventId);
-      emit(state.copyWith(
-        detailStatus: EventDetailStatus.loaded,
-        selectedEvent: event,
-      ));
+      if (!isClosed) {
+        emit(state.copyWith(
+          detailStatus: EventDetailStatus.loaded,
+          selectedEvent: event,
+        ));
+      }
     } catch (e) {
-      emit(state.copyWith(
-        detailStatus: EventDetailStatus.error,
-        detailError: e.toString().replaceFirst('Exception: ', ''),
-      ));
+      if (!isClosed) {
+        emit(state.copyWith(
+          detailStatus: EventDetailStatus.error,
+          detailError: e.toString().replaceFirst('Exception: ', ''),
+        ));
+      }
     }
   }
 
@@ -71,6 +81,7 @@ class EventsCubit extends Cubit<EventsState> {
     String? lat,
     String? lng,
   }) async {
+    if (isClosed) return;
     emit(state.copyWith(formStatus: EventFormStatus.submitting, clearFormError: true));
     try {
       await _remote.createEvent(
@@ -82,14 +93,18 @@ class EventsCubit extends Cubit<EventsState> {
         lat: lat,
         lng: lng,
       );
-      emit(state.copyWith(formStatus: EventFormStatus.success));
+      if (!isClosed) {
+        emit(state.copyWith(formStatus: EventFormStatus.success));
+      }
       // Refresh list
       await loadEvents();
     } catch (e) {
-      emit(state.copyWith(
-        formStatus: EventFormStatus.error,
-        formError: e.toString().replaceFirst('Exception: ', ''),
-      ));
+      if (!isClosed) {
+        emit(state.copyWith(
+          formStatus: EventFormStatus.error,
+          formError: e.toString().replaceFirst('Exception: ', ''),
+        ));
+      }
     }
   }
 
@@ -104,6 +119,7 @@ class EventsCubit extends Cubit<EventsState> {
     String? lat,
     String? lng,
   }) async {
+    if (isClosed) return;
     emit(state.copyWith(formStatus: EventFormStatus.submitting, clearFormError: true));
     try {
       await _remote.updateEvent(
@@ -116,13 +132,17 @@ class EventsCubit extends Cubit<EventsState> {
         lat: lat,
         lng: lng,
       );
-      emit(state.copyWith(formStatus: EventFormStatus.success));
+      if (!isClosed) {
+        emit(state.copyWith(formStatus: EventFormStatus.success));
+      }
       await loadEvents();
     } catch (e) {
-      emit(state.copyWith(
-        formStatus: EventFormStatus.error,
-        formError: e.toString().replaceFirst('Exception: ', ''),
-      ));
+      if (!isClosed) {
+        emit(state.copyWith(
+          formStatus: EventFormStatus.error,
+          formError: e.toString().replaceFirst('Exception: ', ''),
+        ));
+      }
     }
   }
 
@@ -132,9 +152,11 @@ class EventsCubit extends Cubit<EventsState> {
       await _remote.deleteEvents([eventId]);
       await loadEvents();
     } catch (e) {
-      emit(state.copyWith(
-        errorMessage: e.toString().replaceFirst('Exception: ', ''),
-      ));
+      if (!isClosed) {
+        emit(state.copyWith(
+          errorMessage: e.toString().replaceFirst('Exception: ', ''),
+        ));
+      }
     }
   }
 
@@ -144,6 +166,7 @@ class EventsCubit extends Cubit<EventsState> {
     required String status,
     String? note,
   }) async {
+    if (isClosed) return;
     emit(state.copyWith(attendanceLoading: true));
     try {
       await _remote.recordAttendance(
@@ -153,12 +176,16 @@ class EventsCubit extends Cubit<EventsState> {
       );
       // Refresh event details
       await loadEventDetails(eventId);
-      emit(state.copyWith(attendanceLoading: false));
+      if (!isClosed) {
+        emit(state.copyWith(attendanceLoading: false));
+      }
     } catch (e) {
-      emit(state.copyWith(
-        attendanceLoading: false,
-        detailError: e.toString().replaceFirst('Exception: ', ''),
-      ));
+      if (!isClosed) {
+        emit(state.copyWith(
+          attendanceLoading: false,
+          detailError: e.toString().replaceFirst('Exception: ', ''),
+        ));
+      }
     }
   }
 

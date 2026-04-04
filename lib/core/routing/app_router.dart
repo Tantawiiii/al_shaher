@@ -8,6 +8,14 @@ import 'package:al_shaher/feature/user/events/ui/events_screen.dart';
 import 'package:al_shaher/feature/user/events/ui/event_details_screen.dart';
 import 'package:al_shaher/feature/user/events/ui/add_event_screen.dart';
 import 'package:al_shaher/feature/user/events/data/event_model.dart';
+import 'package:al_shaher/feature/user/news/cubit/news_cubit.dart';
+import 'package:al_shaher/feature/user/news/data/news_model.dart';
+import 'package:al_shaher/feature/user/members/cubit/members_cubit.dart';
+import 'package:al_shaher/feature/user/members/ui/member_profile_screen.dart';
+import 'package:al_shaher/feature/user/news/ui/news_screen.dart';
+import 'package:al_shaher/feature/user/news/ui/news_detail_screen.dart';
+import 'package:al_shaher/feature/user/news/ui/add_news_screen.dart';
+import 'package:al_shaher/feature/user/notifications/notifications_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -49,7 +57,16 @@ Route<dynamic> onGenerateAppRoute(RouteSettings settings) {
       );
 
     case AppRoutes.home:
-      return MaterialPageRoute(builder: (_) => const HomeScreen());
+      return MaterialPageRoute(
+        builder: (_) => MultiBlocProvider(
+          providers: [
+            BlocProvider(create: (_) => sl<EventsCubit>()..loadEvents()),
+            BlocProvider(create: (_) => sl<NewsCubit>()..loadNews()),
+            BlocProvider(create: (_) => sl<MembersCubit>()..loadMembers()),
+          ],
+          child: const HomeScreen(),
+        ),
+      );
 
     case AppRoutes.familyTree:
       return MaterialPageRoute(
@@ -84,6 +101,43 @@ Route<dynamic> onGenerateAppRoute(RouteSettings settings) {
           child: AddEventScreen(event: event),
         ),
       );
+
+    case AppRoutes.memberProfile:
+      final memberId = settings.arguments as int;
+      return MaterialPageRoute(
+        builder: (_) => BlocProvider(
+          create: (_) => sl<MembersCubit>(),
+          child: MemberProfileScreen(memberId: memberId),
+        ),
+      );
+
+    case AppRoutes.news:
+      return MaterialPageRoute(
+        builder: (_) => BlocProvider(
+          create: (_) => sl<NewsCubit>()..loadNews(),
+          child: const NewsScreen(),
+        ),
+      );
+
+    case AppRoutes.newsDetails:
+      final newsId = settings.arguments as int;
+      return MaterialPageRoute(
+        builder: (_) => BlocProvider(
+          create: (_) => sl<NewsCubit>(),
+          child: NewsDetailScreen(newsId: newsId),
+        ),
+      );
+
+    case AppRoutes.addNews:
+      final news = settings.arguments as NewsModel?;
+      return MaterialPageRoute(
+        builder: (_) => BlocProvider(
+          create: (_) => sl<NewsCubit>(),
+          child: AddNewsScreen(news: news),
+        ),
+      );
+    case AppRoutes.notifications:
+      return MaterialPageRoute(builder: (_) => const NotificationsScreen());
 
     default:
       return MaterialPageRoute(

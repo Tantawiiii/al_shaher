@@ -15,6 +15,7 @@ class ApiEndpoints {
   static const String applicationForm = '/application-form';
   static const String media = '/media';
   static const String branchIndex = '/branch/index';
+  static const String member = '/member';
   static const String memberIndex = '/member/index';
   static const String login = '/login';
   static const String membersTree = '/members/tree';
@@ -25,4 +26,9 @@ class ApiEndpoints {
   static const String eventIndex = '/event/index';
   static const String eventDelete = '/event/delete';
   static const String eventAttendance = '/event-attendance';
+
+  // News
+  static const String news = '/news';
+  static const String newsIndex = '/news/index';
+  static const String newsDelete = '/news/delete';
 }

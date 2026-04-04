@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../../core/constant/app_assets.dart';
 import '../../../../../core/constant/app_colors.dart';
+import '../../../../../core/routing/app_routes.dart';
 
 class HomeHeader extends StatelessWidget {
   const HomeHeader({super.key});
@@ -24,7 +25,9 @@ class HomeHeader extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Bounce(
-            onTap: (){},
+            onTap: () {
+              Scaffold.of(context).openDrawer();
+            },
             child: SvgPicture.asset(
                 AppAssets.menuIcon,
               width: 26.w,
@@ -35,7 +38,9 @@ class HomeHeader extends StatelessWidget {
             height: 48.h,
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pushNamed(context, AppRoutes.notifications);
+            },
             icon: Icon(
               Icons.notifications_none_rounded,
               color: AppColors.white,
