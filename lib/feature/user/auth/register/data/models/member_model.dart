@@ -6,6 +6,7 @@ class MemberModel {
     this.nationalId,
     this.dateOfBirth,
     this.city,
+    this.imageUrl,
   });
 
   final int id;
@@ -14,6 +15,7 @@ class MemberModel {
   final String? nationalId;
   final String? dateOfBirth;
   final String? city;
+  final String? imageUrl;
 
   factory MemberModel.fromJson(Map<String, dynamic> json) {
     return MemberModel(
@@ -23,6 +25,7 @@ class MemberModel {
       nationalId: json['national_id'] as String?,
       dateOfBirth: json['date_of_birth'] as String?,
       city: json['city'] as String?,
+      imageUrl: json['imageUrl'] as String?,
     );
   }
 }

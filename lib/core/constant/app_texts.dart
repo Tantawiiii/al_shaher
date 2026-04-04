@@ -162,6 +162,10 @@ class AppTexts {
   static const String eventsDescription = 'الوصف';
   static const String eventsDescriptionHint = 'اكتب وصفاً للمناسبة...';
   static const String eventsLocationHint = 'مثال: قاعة الأفراح';
+  static const String eventsPickOnMap = 'اختيار الموقع على الخريطة';
+  /// Shown after tapping map icon until Google Maps is integrated.
+  static const String eventsFakeMapPicked =
+      'تم تعبئة إحداثيات تجريبية — سيتم ربط الخريطة لاحقاً';
   static const String eventsSelectDate = 'اختر التاريخ';
   static const String eventsSelectTime = 'اختر الوقت';
   static const String eventsRequired = 'هذا الحقل مطلوب';
@@ -169,4 +173,35 @@ class AppTexts {
   static const String eventsUpdate = 'تعديل';
   static const String eventsAdded = 'تم إضافة المناسبة بنجاح';
   static const String eventsUpdated = 'تم تعديل المناسبة بنجاح';
+
+  // News
+  static const String newsTitle = 'اخبار العائلة';
+  static const String newsLoading = 'جاري تحميل الاخبار...';
+  static const String newsEmpty = 'لا توجد اخبار حالياً';
+  static const String newsAdd = 'إضافة خبر';
+  static const String newsEdit = 'تعديل الخبر';
+  static const String newsDelete = 'حذف الخبر';
+  static const String newsDeleteConfirm = 'تأكيد الحذف';
+  static const String newsDeleteMessage = 'هل أنت متأكد من حذف هذا الخبر؟';
+  static const String newsAdded = 'تم إضافة الخبر بنجاح';
+  static const String newsUpdated = 'تم تعديل الخبر بنجاح';
+  static const String newsDeleted = 'تم حذف الخبر بنجاح';
+  static const String newsFieldTitle = 'عنوان الخبر';
+  static const String newsFieldTitleHint = 'مثال: حفل زفاف';
+  static const String newsFieldSummary = 'ملخص الخبر';
+  static const String newsFieldSummaryHint = 'اكتب ملخصاً مختصراً...';
+  static const String newsFieldContent = 'محتوى الخبر';
+  static const String newsFieldContentHint = 'اكتب تفاصيل الخبر...';
+  static const String newsGallery = 'معرض الصور';
+  static const String newsPickImages = 'اختر صور من المعرض';
+  static const String newsUploading = 'جاري رفع الصور';
+  static const String newsExistingImages = 'الصور الحالية';
+
+  // Notifications
+  static const String notificationsTitle = 'الاشعارات';
+  static const String notificationsToday = 'اليوم';
+  static const String notificationsYesterday = 'الامس';
+
+  // General
+  static const String seeAll = 'عرض الكل';
 }

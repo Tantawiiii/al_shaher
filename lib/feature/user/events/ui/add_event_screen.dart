@@ -6,14 +6,21 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 import '../../../../core/constant/app_colors.dart';
 import '../../../../core/constant/app_texts.dart';
+import '../../../../core/widgets/app_form_text_field.dart';
 import '../cubit/events_cubit.dart';
 import '../cubit/events_state.dart';
 import '../data/event_model.dart';
 
+/// Stand-in lat/lng until Google Maps / Places picker + API key are wired.
+/// Matches temporary backend test shape (string values).
+const Map<String, String> _kFakePickedCoordinates = {
+  'lat': '15454',
+  'lng': '546546',
+};
+
 class AddEventScreen extends StatefulWidget {
   const AddEventScreen({super.key, this.event});
 
-  /// If non-null we are editing, otherwise creating.
   final EventModel? event;
 
   @override
@@ -21,12 +28,13 @@ class AddEventScreen extends StatefulWidget {
 }
 
 class _AddEventScreenState extends State<AddEventScreen> {
-  final _formKey = GlobalKey<FormState>();
   late final TextEditingController _nameController;
   late final TextEditingController _descriptionController;
   late final TextEditingController _locationController;
   late final TextEditingController _timeController;
   DateTime? _selectedDate;
+  String? _pickedLat;
+  String? _pickedLng;
 
   bool get isEditing => widget.event != null;
 
@@ -34,10 +42,12 @@ class _AddEventScreenState extends State<AddEventScreen> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.event?.name ?? '');
-    _descriptionController =
-        TextEditingController(text: widget.event?.description ?? '');
-    _locationController =
-        TextEditingController(text: widget.event?.location ?? '');
+    _descriptionController = TextEditingController(
+      text: widget.event?.description ?? '',
+    );
+    _locationController = TextEditingController(
+      text: widget.event?.location ?? '',
+    );
     _timeController = TextEditingController(text: widget.event?.time ?? '');
     _selectedDate = widget.event?.date;
     context.read<EventsCubit>().resetFormState();
@@ -61,9 +71,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
         listener: (context, state) {
           if (state.formStatus == EventFormStatus.success) {
             Fluttertoast.showToast(
-              msg: isEditing
-                  ? AppTexts.eventsUpdated
-                  : AppTexts.eventsAdded,
+              msg: isEditing ? AppTexts.eventsUpdated : AppTexts.eventsAdded,
               backgroundColor: AppColors.success600,
             );
             Navigator.pop(context);
@@ -152,9 +160,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
   Widget _buildForm() {
     return SingleChildScrollView(
       padding: EdgeInsets.all(16.w),
-      child: Form(
-        key: _formKey,
-        child: Container(
+      child: Container(
           padding: EdgeInsets.all(20.w),
           decoration: BoxDecoration(
             color: AppColors.white,
@@ -173,21 +179,33 @@ class _AddEventScreenState extends State<AddEventScreen> {
               // Name
               _buildLabel(AppTexts.eventsName),
               SizedBox(height: 8.h),
-              _buildTextField(
+              AppFormTextField(
                 controller: _nameController,
-                hint: AppTexts.eventsNameHint,
-                validator: (v) =>
-                    v == null || v.isEmpty ? AppTexts.eventsRequired : null,
+                hintText: AppTexts.eventsNameHint,
+                textInputAction: TextInputAction.next,
+                fillColor: AppColors.neutral50,
+                unfocusedBorderColor: AppColors.neutral200,
+                borderRadius: 12.r,
+                borderWidth: 1,
+                textStyle: TextStyle(fontSize: 14.sp, color: AppColors.neutral900),
+                hintStyle: TextStyle(fontSize: 14.sp, color: AppColors.neutral400),
               ),
               SizedBox(height: 16.h),
 
               // Description
               _buildLabel(AppTexts.eventsDescription),
               SizedBox(height: 8.h),
-              _buildTextField(
+              AppFormTextField(
                 controller: _descriptionController,
-                hint: AppTexts.eventsDescriptionHint,
+                hintText: AppTexts.eventsDescriptionHint,
                 maxLines: 3,
+                textInputAction: TextInputAction.next,
+                fillColor: AppColors.neutral50,
+                unfocusedBorderColor: AppColors.neutral200,
+                borderRadius: 12.r,
+                borderWidth: 1,
+                textStyle: TextStyle(fontSize: 14.sp, color: AppColors.neutral900),
+                hintStyle: TextStyle(fontSize: 14.sp, color: AppColors.neutral400),
               ),
               SizedBox(height: 16.h),
 
@@ -203,17 +221,31 @@ class _AddEventScreenState extends State<AddEventScreen> {
               _buildTimePicker(),
               SizedBox(height: 16.h),
 
-              // Location
               _buildLabel(AppTexts.eventsLocation),
               SizedBox(height: 8.h),
-              _buildTextField(
+              AppFormTextField(
                 controller: _locationController,
-                hint: AppTexts.eventsLocationHint,
-                prefixIcon: Icons.location_on_outlined,
+                hintText: AppTexts.eventsLocationHint,
+                leadingIcon: const Icon(Icons.location_on_outlined),
+                trailing: IconButton(
+                  onPressed: _pickFakeMapLocation,
+                  tooltip: AppTexts.eventsPickOnMap,
+                  style: IconButton.styleFrom(
+                    foregroundColor: AppColors.primaryColor600,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  icon: Icon(Icons.map_outlined, size: 22.sp),
+                ),
+                textInputAction: TextInputAction.done,
+                fillColor: AppColors.neutral50,
+                unfocusedBorderColor: AppColors.neutral200,
+                borderRadius: 12.r,
+                borderWidth: 1,
+                textStyle: TextStyle(fontSize: 14.sp, color: AppColors.neutral900),
+                hintStyle: TextStyle(fontSize: 14.sp, color: AppColors.neutral400),
               ),
               SizedBox(height: 32.h),
 
-              // Submit button
               BlocBuilder<EventsCubit, EventsState>(
                 buildWhen: (p, c) => p.formStatus != c.formStatus,
                 builder: (context, state) {
@@ -227,8 +259,8 @@ class _AddEventScreenState extends State<AddEventScreen> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primaryColor600,
                         foregroundColor: AppColors.white,
-                        disabledBackgroundColor:
-                            AppColors.primaryColor400.withOpacity(0.6),
+                        disabledBackgroundColor: AppColors.primaryColor400
+                            .withOpacity(0.6),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14.r),
                         ),
@@ -260,7 +292,6 @@ class _AddEventScreenState extends State<AddEventScreen> {
             ],
           ),
         ),
-      ),
     );
   }
 
@@ -275,52 +306,35 @@ class _AddEventScreenState extends State<AddEventScreen> {
     );
   }
 
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String hint,
-    int maxLines = 1,
-    IconData? prefixIcon,
-    String? Function(String?)? validator,
-  }) {
-    return TextFormField(
-      controller: controller,
-      maxLines: maxLines,
-      textDirection: TextDirection.rtl,
-      validator: validator,
-      style: TextStyle(fontSize: 14.sp, color: AppColors.neutral900),
-      decoration: InputDecoration(
-        hintText: hint,
-        hintStyle: TextStyle(fontSize: 14.sp, color: AppColors.neutral400),
-        prefixIcon: prefixIcon != null
-            ? Icon(prefixIcon, size: 20.sp, color: AppColors.neutral400)
-            : null,
-        filled: true,
-        fillColor: AppColors.neutral50,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12.r),
-          borderSide: const BorderSide(color: AppColors.neutral200),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12.r),
-          borderSide: const BorderSide(color: AppColors.neutral200),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12.r),
-          borderSide: const BorderSide(color: AppColors.primaryColor600),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12.r),
-          borderSide: const BorderSide(color: AppColors.error600),
-        ),
-        contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
-      ),
+  void _pickFakeMapLocation() {
+    setState(() {
+      _pickedLat = _kFakePickedCoordinates['lat']!.trim();
+      _pickedLng = _kFakePickedCoordinates['lng']!.trim();
+      if (_locationController.text.trim().isEmpty) {
+        _locationController.text = AppTexts.eventsLocationHint;
+      }
+    });
+    Fluttertoast.showToast(
+      msg: AppTexts.eventsFakeMapPicked,
+      backgroundColor: AppColors.primaryColor600,
     );
   }
 
   Widget _buildDatePicker() {
     final months = [
-      '', 'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
-      'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر',
+      '',
+      'يناير',
+      'فبراير',
+      'مارس',
+      'أبريل',
+      'مايو',
+      'يونيو',
+      'يوليو',
+      'أغسطس',
+      'سبتمبر',
+      'أكتوبر',
+      'نوفمبر',
+      'ديسمبر',
     ];
     return Bounce(
       onTap: () async {
@@ -444,7 +458,13 @@ class _AddEventScreenState extends State<AddEventScreen> {
   }
 
   void _onSubmit() {
-    if (!_formKey.currentState!.validate()) return;
+    if (_nameController.text.trim().isEmpty) {
+      Fluttertoast.showToast(
+        msg: AppTexts.eventsRequired,
+        backgroundColor: AppColors.error600,
+      );
+      return;
+    }
     if (_selectedDate == null) {
       Fluttertoast.showToast(
         msg: AppTexts.eventsSelectDate,
@@ -458,21 +478,25 @@ class _AddEventScreenState extends State<AddEventScreen> {
 
     if (isEditing) {
       context.read<EventsCubit>().updateEvent(
-            eventId: widget.event!.id,
-            name: _nameController.text.trim(),
-            description: _descriptionController.text.trim(),
-            date: dateStr,
-            time: _timeController.text.trim(),
-            location: _locationController.text.trim(),
-          );
+        eventId: widget.event!.id,
+        name: _nameController.text.trim(),
+        description: _descriptionController.text.trim(),
+        date: dateStr,
+        time: _timeController.text.trim(),
+        location: _locationController.text.trim(),
+        lat: _pickedLat,
+        lng: _pickedLng,
+      );
     } else {
       context.read<EventsCubit>().createEvent(
-            name: _nameController.text.trim(),
-            description: _descriptionController.text.trim(),
-            date: dateStr,
-            time: _timeController.text.trim(),
-            location: _locationController.text.trim(),
-          );
+        name: _nameController.text.trim(),
+        description: _descriptionController.text.trim(),
+        date: dateStr,
+        time: _timeController.text.trim(),
+        location: _locationController.text.trim(),
+        lat: _pickedLat,
+        lng: _pickedLng,
+      );
     }
   }
 }

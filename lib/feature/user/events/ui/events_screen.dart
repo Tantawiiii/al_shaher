@@ -117,7 +117,7 @@ class _EventsScreenState extends State<EventsScreen> {
       buildWhen: (p, c) => p.isCalendarView != c.isCalendarView,
       builder: (context, state) {
         return Container(
-          color: AppColors.white,
+          color: AppColors.primaryColor600,
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
           child: Container(
             height: 44.h,
@@ -135,6 +135,7 @@ class _EventsScreenState extends State<EventsScreen> {
                     },
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 250),
+                      padding: EdgeInsets.symmetric(vertical: 12.h),
                       decoration: BoxDecoration(
                         color: !state.isCalendarView
                             ? AppColors.white
@@ -155,7 +156,7 @@ class _EventsScreenState extends State<EventsScreen> {
                         children: [
                           Icon(
                             Icons.menu,
-                            size: 18.sp,
+                            size: 20.sp,
                             color: !state.isCalendarView
                                 ? AppColors.primaryColor700
                                 : AppColors.neutral500,
@@ -164,8 +165,8 @@ class _EventsScreenState extends State<EventsScreen> {
                           Text(
                             AppTexts.eventsList,
                             style: TextStyle(
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.w600,
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.w800,
                               color: !state.isCalendarView
                                   ? AppColors.primaryColor700
                                   : AppColors.neutral500,
@@ -184,6 +185,7 @@ class _EventsScreenState extends State<EventsScreen> {
                     },
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 250),
+                      padding: EdgeInsets.symmetric(vertical: 12.h),
                       decoration: BoxDecoration(
                         color: state.isCalendarView
                             ? AppColors.white
@@ -204,7 +206,7 @@ class _EventsScreenState extends State<EventsScreen> {
                         children: [
                           Icon(
                             Icons.calendar_today_outlined,
-                            size: 18.sp,
+                            size: 20.sp,
                             color: state.isCalendarView
                                 ? AppColors.primaryColor700
                                 : AppColors.neutral500,
@@ -213,8 +215,8 @@ class _EventsScreenState extends State<EventsScreen> {
                           Text(
                             AppTexts.eventsCalendar,
                             style: TextStyle(
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.w600,
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.w800,
                               color: state.isCalendarView
                                   ? AppColors.primaryColor700
                                   : AppColors.neutral500,

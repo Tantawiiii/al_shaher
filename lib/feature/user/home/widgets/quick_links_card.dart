@@ -30,21 +30,17 @@ class QuickLinksCard extends StatelessWidget {
           _QuickLinkItem(
             icon: Icons.people_outline_rounded,
             title: AppTexts.familyTree,
-            onTap: () {
-              Navigator.pushNamed(context, AppRoutes.familyTree);
-            },
+            onTap: () => Navigator.pushNamed(context, AppRoutes.familyTree),
           ),
           _QuickLinkItem(
             icon: Icons.calendar_month_outlined,
             title: AppTexts.events,
-            onTap: () {
-              Navigator.pushNamed(context, AppRoutes.events);
-            },
+            onTap: () => Navigator.pushNamed(context, AppRoutes.events),
           ),
           _QuickLinkItem(
             icon: Icons.article_outlined,
             title: AppTexts.news,
-            onTap: () {},
+            onTap: () =>  Navigator.pushNamed(context, AppRoutes.news),
           ),
           _QuickLinkItem(
             icon: Icons.edit_document,

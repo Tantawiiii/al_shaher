@@ -11,5 +11,14 @@ final class AppRoutes {
   static const String eventDetails = '/eventDetails';
   static const String addEvent = '/addEvent';
 
+  // Members
+  static const String memberProfile = '/memberProfile';
+
+  // News
+  static const String news = '/news';
+  static const String newsDetails = '/newsDetails';
+  static const String addNews = '/addNews';
+  static const String notifications = '/notifications';
+
 }
 
