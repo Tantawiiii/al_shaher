@@ -7,7 +7,6 @@ import '../../../../core/constant/app_colors.dart';
 import '../data/tree_member_model.dart';
 import 'tree_node_card.dart';
 
-/// ---- layout constants ----
 double _nodeW() => 150.w;
 double _nodeH() => 90.h;
 double _hGap() => 20.w;
@@ -15,7 +14,6 @@ double _vGap() => 56.h;
 double _addBtnH() => 42.h;
 double _lineStroke() => 1.8;
 
-/// A positioned node used for both painting and placing widgets.
 class _PlacedNode {
   _PlacedNode({
     required this.member,
@@ -27,8 +25,8 @@ class _PlacedNode {
   });
 
   final TreeMemberModel member;
-  final double x; // left
-  final double y; // top
+  final double x;
+  final double y;
   final double w;
   final double h;
   final bool isCurrentUser;
@@ -37,25 +35,25 @@ class _PlacedNode {
   double get bottom => y + h;
 }
 
-/// A line segment to draw.
 class _LineSeg {
   const _LineSeg(this.from, this.to);
   final Offset from;
   final Offset to;
 }
 
-/// Recursively lays out the family tree with connecting lines.
 class TreeLayoutWidget extends StatelessWidget {
   const TreeLayoutWidget({
     super.key,
     required this.roots,
     required this.currentUserId,
     this.onAddChild,
+    this.onTapMember,
   });
 
   final List<TreeMemberModel> roots;
   final int? currentUserId;
   final void Function(TreeMemberModel parent)? onAddChild;
+  final void Function(TreeMemberModel member)? onTapMember;
 
   @override
   Widget build(BuildContext context) {
@@ -65,28 +63,18 @@ class TreeLayoutWidget extends StatelessWidget {
           padding: EdgeInsets.all(40.w),
           child: Text(
             'لا توجد بيانات',
-            style: TextStyle(
-              fontSize: 16.sp,
-              color: AppColors.neutral400,
-            ),
+            style: TextStyle(fontSize: 16.sp, color: AppColors.neutral400),
           ),
         ),
       );
     }
 
-    // 1. compute every node's position
     final placements = <_PlacedNode>[];
     final lines = <_LineSeg>[];
     double cursor = 0;
     for (int i = 0; i < roots.length; i++) {
       if (i > 0) cursor += _hGap();
-      final w = _layoutSubtree(
-        roots[i],
-        cursor,
-        0,
-        placements,
-        lines,
-      );
+      final w = _layoutSubtree(roots[i], cursor, 0, placements, lines);
       cursor += w;
     }
 
@@ -119,6 +107,9 @@ class TreeLayoutWidget extends StatelessWidget {
                   onAddChild: p.isCurrentUser
                       ? () => onAddChild?.call(p.member)
                       : null,
+                  onTap: onTapMember == null
+                      ? null
+                      : () => onTapMember!.call(p.member),
                 ),
               ),
           ],
@@ -127,8 +118,6 @@ class TreeLayoutWidget extends StatelessWidget {
     );
   }
 
-  /// Returns the width of the subtree rooted at [node], starting at ([startX], [startY]).
-  /// Populates [outNodes] and [outLines].
   double _layoutSubtree(
     TreeMemberModel node,
     double startX,
@@ -143,30 +132,28 @@ class TreeLayoutWidget extends StatelessWidget {
     // center the node card within its subtree width
     final nodeX = startX + (subtreeW - _nodeW()) / 2;
 
-    outNodes.add(_PlacedNode(
-      member: node,
-      x: nodeX,
-      y: startY,
-      w: _nodeW(),
-      h: cardH,
-      isCurrentUser: isMe,
-    ));
+    outNodes.add(
+      _PlacedNode(
+        member: node,
+        x: nodeX,
+        y: startY,
+        w: _nodeW(),
+        h: cardH,
+        isCurrentUser: isMe,
+      ),
+    );
 
     if (node.children.isEmpty) return subtreeW;
 
-    // y for children row
     final parentBottomY = startY + cardH + (isMe ? _addBtnH() : 0);
     final childrenTopY = parentBottomY + _vGap();
     final midY = parentBottomY + _vGap() / 2;
 
-    // parent center  
     final parentCX = nodeX + _nodeW() / 2;
 
-    // lay out children and collect their center-x
     final childCenters = <double>[];
     double cx = startX;
     final childrenTotalW = _childrenTotalWidth(node);
-    // center children block within subtree
     cx = startX + (subtreeW - childrenTotalW) / 2;
 
     for (int i = 0; i < node.children.length; i++) {
@@ -185,30 +172,18 @@ class TreeLayoutWidget extends StatelessWidget {
       cx += childW;
     }
 
-    // --- draw connecting lines ---
+    outLines.add(
+      _LineSeg(Offset(parentCX, parentBottomY), Offset(parentCX, midY)),
+    );
 
-    // 1. vertical from parent bottom to midY
-    outLines.add(_LineSeg(
-      Offset(parentCX, parentBottomY),
-      Offset(parentCX, midY),
-    ));
-
-    // 2. horizontal bar across children (only if > 1 child)
     if (childCenters.length > 1) {
       final leftMost = childCenters.reduce(math.min);
       final rightMost = childCenters.reduce(math.max);
-      outLines.add(_LineSeg(
-        Offset(leftMost, midY),
-        Offset(rightMost, midY),
-      ));
+      outLines.add(_LineSeg(Offset(leftMost, midY), Offset(rightMost, midY)));
     }
 
-    // 3. vertical drop from midY to each child top
     for (final ccx in childCenters) {
-      outLines.add(_LineSeg(
-        Offset(ccx, midY),
-        Offset(ccx, childrenTopY),
-      ));
+      outLines.add(_LineSeg(Offset(ccx, midY), Offset(ccx, childrenTopY)));
     }
 
     return subtreeW;
@@ -231,7 +206,6 @@ class TreeLayoutWidget extends StatelessWidget {
   }
 }
 
-/// Paints the connecting lines between nodes.
 class _TreeLinePainter extends CustomPainter {
   _TreeLinePainter(this.lines);
 

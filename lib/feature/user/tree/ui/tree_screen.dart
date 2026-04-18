@@ -1,14 +1,23 @@
+import 'dart:ui' as ui;
+
 import 'package:al_shaher/core/constant/app_assets.dart';
 import 'package:bounce/bounce.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:gal/gal.dart';
 
 import '../../../../core/constant/app_colors.dart';
 import '../../../../core/constant/app_texts.dart';
 import '../cubit/tree_cubit.dart';
 import '../cubit/tree_state.dart';
+import '../data/tree_member_model.dart';
+import 'add_child_request_sheet.dart';
+import 'member_preview_sheet.dart';
 import 'tree_layout_widget.dart';
 
 class TreeScreen extends StatefulWidget {
@@ -21,6 +30,8 @@ class TreeScreen extends StatefulWidget {
 class _TreeScreenState extends State<TreeScreen> {
   final _searchController = TextEditingController();
   final _transformationController = TransformationController();
+  final GlobalKey _treeExportKey = GlobalKey();
+  bool _exporting = false;
 
   @override
   void dispose() {
@@ -171,14 +182,21 @@ class _TreeScreenState extends State<TreeScreen> {
           ),
           const Spacer(),
           Bounce(
-            onTap: () {
-              // TODO: export/download tree
-            },
-            child: Icon(
-              Icons.download_outlined,
-              color: AppColors.white,
-              size: 24.sp,
-            ),
+            onTap: _exporting ? null : _exportTreeToGallery,
+            child: _exporting
+                ? SizedBox(
+                    width: 24.sp,
+                    height: 24.sp,
+                    child: const CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: AppColors.white,
+                    ),
+                  )
+                : Icon(
+                    Icons.download_outlined,
+                    color: AppColors.white,
+                    size: 24.sp,
+                  ),
           ),
         ],
       ),
@@ -343,23 +361,122 @@ class _TreeScreenState extends State<TreeScreen> {
       minScale: 0.3,
       maxScale: 3.0,
       boundaryMargin: EdgeInsets.all(200.w),
-      child: Padding(
-        padding: EdgeInsets.all(20.w),
-        child: Column(
-          children: [
-            if (state.roots.isNotEmpty && state.roots.first.branch != null)
-              _buildBranchBadge(state.roots.first.branch!.name),
-            if (state.roots.isNotEmpty && state.roots.first.branch != null)
-              SizedBox(height: 16.h),
-            TreeLayoutWidget(
-              roots: state.roots,
-              currentUserId: state.currentUser?.id,
-              onAddChild: (parent) => _showAddChildDialog(parent),
-            ),
-          ],
+      child: RepaintBoundary(
+        key: _treeExportKey,
+        child: Padding(
+          padding: EdgeInsets.all(20.w),
+          child: Column(
+            children: [
+              if (state.roots.isNotEmpty && state.roots.first.branch != null)
+                _buildBranchBadge(state.roots.first.branch!.name),
+              if (state.roots.isNotEmpty && state.roots.first.branch != null)
+                SizedBox(height: 16.h),
+              TreeLayoutWidget(
+                roots: state.roots,
+                currentUserId: state.currentUser?.id,
+                onAddChild: (parent) => _showAddChildDialog(parent),
+                onTapMember: _showMemberPreview,
+              ),
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  Future<void> _exportTreeToGallery() async {
+    if (_exporting || !mounted) return;
+    final state = context.read<TreeCubit>().state;
+    if (state.status != TreeStatus.loaded || state.roots.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text(AppTexts.treeExportNothing)),
+      );
+      return;
+    }
+
+    setState(() => _exporting = true);
+    Matrix4? savedMatrix;
+    try {
+      if (kIsWeb) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text(AppTexts.treeExportWebUnsupported)),
+        );
+        return;
+      }
+
+      var granted = await Gal.hasAccess(toAlbum: true);
+      if (!granted) {
+        granted = await Gal.requestAccess(toAlbum: true);
+      }
+      if (!granted) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text(AppTexts.treeExportPermissionDenied)),
+        );
+        return;
+      }
+
+      savedMatrix = _transformationController.value.clone();
+      _transformationController.value = Matrix4.identity();
+      await WidgetsBinding.instance.endOfFrame;
+      await Future<void>.delayed(const Duration(milliseconds: 48));
+
+      if (!mounted) return;
+
+      final boundary = _treeExportKey.currentContext?.findRenderObject()
+          as RenderRepaintBoundary?;
+      if (boundary == null) {
+        throw Exception('no boundary');
+      }
+
+      final dpr = MediaQuery.of(context).devicePixelRatio;
+      final pixelRatio = dpr.clamp(1.0, 3.0);
+      final image = await boundary.toImage(pixelRatio: pixelRatio);
+      final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+      image.dispose();
+      if (byteData == null) {
+        throw Exception('png encode');
+      }
+      final bytes = byteData.buffer.asUint8List();
+      final name = 'family_tree_${DateTime.now().millisecondsSinceEpoch}';
+      await Gal.putImageBytes(
+        bytes,
+        album: 'Al Shaher',
+        name: name,
+      );
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text(AppTexts.treeExportSuccess)),
+      );
+    } on MissingPluginException {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(AppTexts.treeExportPluginMissing),
+          duration: Duration(seconds: 5),
+        ),
+      );
+    } on GalException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${AppTexts.treeExportFailed}: ${e.type.name}')),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text(AppTexts.treeExportFailed)),
+      );
+    } finally {
+      final matrix = savedMatrix;
+      if (matrix != null) {
+        _transformationController.value = matrix;
+      }
+      if (mounted) {
+        setState(() => _exporting = false);
+      }
+    }
   }
 
   Widget _buildBranchBadge(String branchName) {
@@ -389,72 +506,15 @@ class _TreeScreenState extends State<TreeScreen> {
     );
   }
 
-  void _showAddChildDialog(dynamic parent) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        return Container(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom,
-          ),
-          decoration: BoxDecoration(
-            color: AppColors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
-          ),
-          child: Padding(
-            padding: EdgeInsets.all(24.w),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 40.w,
-                  height: 4.h,
-                  decoration: BoxDecoration(
-                    color: AppColors.neutral300,
-                    borderRadius: BorderRadius.circular(2.r),
-                  ),
-                ),
-                SizedBox(height: 20.h),
-                Text(
-                  AppTexts.treeAddChild,
-                  style: TextStyle(
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.neutral900,
-                  ),
-                ),
-                SizedBox(height: 16.h),
-                Text(
-                  'سيتم إضافة هذه الميزة قريباً',
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    color: AppColors.neutral500,
-                  ),
-                ),
-                SizedBox(height: 24.h),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () => Navigator.pop(context),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primaryColor600,
-                      foregroundColor: AppColors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.r),
-                      ),
-                      padding: EdgeInsets.symmetric(vertical: 14.h),
-                    ),
-                    child: const Text('حسناً'),
-                  ),
-                ),
-                SizedBox(height: 8.h),
-              ],
-            ),
-          ),
-        );
-      },
+  void _showMemberPreview(TreeMemberModel member) {
+    MemberPreviewSheet.show(context, member);
+  }
+
+  void _showAddChildDialog(TreeMemberModel parent) {
+    AddChildRequestSheet.show(
+      context,
+      parent: parent,
+      onSuccess: () => context.read<TreeCubit>().loadTree(),
     );
   }
 }

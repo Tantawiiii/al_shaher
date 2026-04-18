@@ -12,6 +12,8 @@ import 'package:al_shaher/feature/user/news/cubit/news_cubit.dart';
 import 'package:al_shaher/feature/user/news/data/news_model.dart';
 import 'package:al_shaher/feature/user/members/cubit/members_cubit.dart';
 import 'package:al_shaher/feature/user/members/ui/member_profile_screen.dart';
+import 'package:al_shaher/feature/user/requests/cubit/request_cubit.dart';
+import 'package:al_shaher/feature/user/requests/ui/request_screen.dart';
 import 'package:al_shaher/feature/user/news/ui/news_screen.dart';
 import 'package:al_shaher/feature/user/news/ui/news_detail_screen.dart';
 import 'package:al_shaher/feature/user/news/ui/add_news_screen.dart';
@@ -138,6 +140,14 @@ Route<dynamic> onGenerateAppRoute(RouteSettings settings) {
       );
     case AppRoutes.notifications:
       return MaterialPageRoute(builder: (_) => const NotificationsScreen());
+
+    case AppRoutes.submitRequest:
+      return MaterialPageRoute(
+        builder: (_) => BlocProvider(
+          create: (_) => sl<RequestCubit>(),
+          child: const RequestScreen(),
+        ),
+      );
 
     default:
       return MaterialPageRoute(

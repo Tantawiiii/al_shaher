@@ -39,6 +39,7 @@ class MemberDetailModel {
     this.phone,
     this.nationalId,
     this.dateOfBirth,
+    this.dateOfDeath,
     this.city,
     this.motherName,
     this.wifeName,
@@ -58,6 +59,7 @@ class MemberDetailModel {
   final String? phone;
   final String? nationalId;
   final String? dateOfBirth;
+  final String? dateOfDeath;
   final String? city;
   final String? motherName;
   final String? wifeName;
@@ -69,8 +71,6 @@ class MemberDetailModel {
   final FatherInfo? father;
   final bool dead;
   final List<MemberDetailModel> children;
-
-  String? get dateOfDeath => dead ? null : null;
 
   factory MemberDetailModel.fromJson(Map<String, dynamic> json) {
     BranchInfo? branch;
@@ -100,6 +100,7 @@ class MemberDetailModel {
       phone: json['phone']?.toString(),
       nationalId: json['national_id']?.toString(),
       dateOfBirth: json['date_of_birth']?.toString(),
+      dateOfDeath: json['date_of_death']?.toString(),
       city: json['city']?.toString(),
       motherName: json['mother_name']?.toString(),
       wifeName: json['wife_name']?.toString(),

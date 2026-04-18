@@ -132,6 +132,21 @@ class AppTexts {
   static const String treeBranch = 'الفرع';
   static const String treeNoData = 'لا توجد بيانات';
   static const String treeLoading = 'جاري تحميل الشجرة...';
+  static const String treeExportSuccess = 'تم حفظ صورة الشجرة في المعرض';
+  static const String treeExportFailed = 'تعذر حفظ الصورة';
+  static const String treeExportNothing = 'لا توجد شجرة للتصدير';
+  static const String treeExportPermissionDenied =
+      'لم يتم منح إذن الوصول إلى معرض الصور';
+  /// Shown when the native `gal` plugin is not linked (e.g. hot reload after `pub add`).
+  static const String treeExportPluginMissing =
+      'أوقف التطبيق ثم شغّله من جديد (تشغيل كامل وليس إحماءً سريعاً). على iOS نفّذ pod install في مجلد ios.';
+  static const String treeExportWebUnsupported =
+      'تصدير الشجرة إلى المعرض غير متاح على الويب';
+  static const String home = 'الرئيسية';
+  static const String setting = 'الاعدادات';
+  static const String logout = 'تسجيل خروج';
+  static const String aboutApp = 'عن التطبيق';
+
 
   // Events
   static const String eventsLoading = 'جاري تحميل المناسبات...';
@@ -204,4 +219,91 @@ class AppTexts {
 
   // General
   static const String seeAll = 'عرض الكل';
+  static const String fatherName =  'اسم الاب';
+  static const String motherName =  'اسم الام';
+  static const String birthdate =  'تاريخ الميلاد';
+  static const String death =  'متوفي';
+  static const String wife =  'الزوجة';
+  static const String children =  'الابناء';
+
+  /// Shared validation / actions
+  static const String fieldRequired = 'مطلوب';
+
+  // Requests — submit add / update member (`RequestScreen`)
+  static const String requestAddUpdateTitle = 'اضافة / تحديث حالة';
+  static const String requestAddUpdateSubtitle =
+      'قم باختيار نوع التعديل ومن ثم استكمل تعبئة البيانات';
+  static const String requestModificationTypeLabel = 'نوع التعديل';
+  static const String requestTypeNewborn = 'اضافة مولود';
+  static const String requestTypeUpdateStatus = 'تحديث حالة';
+  static const String requestNewbornNameLabel = 'اسم المولود';
+  static const String requestNewbornNationalIdLabel =
+      'رقم الهوية الوطنية للمولود';
+  static const String requestSubmitButton = 'تقديم الطلب';
+  static const String requestUserLoadFailed = 'تعذر تحميل بيانات المستخدم';
+  static const String requestTypeUnavailable = 'هذا النوع غير متاح حالياً';
+  static const String requestSuccessTitle = 'تم تقديم طلبك بنجاح';
+  static const String requestSuccessDescription =
+      'سيقوم مشرف الفرع بمراجعة البيانات، وسيتم إرسال إشعار لك عند الموافقة على الطلب.';
+
+  // Tree — add child request sheet (`AddChildRequestSheet`)
+  static const String addChildDeathDateRequired = 'أدخل تاريخ الوفاة';
+  static const String addChildRequestSent = 'تم إرسال الطلب بنجاح';
+  static const String addChildTreeParentLinePrefix = 'الأب في الشجرة: ';
+  static const String addChildSegmentSon = 'ابن';
+  static const String addChildSegmentFather = 'أب';
+  static const String addChildNameLabel = 'الاسم';
+  static const String addChildPhoneLabel = 'الهاتف';
+  static const String addChildNationalIdLabel = 'الهوية الوطنية';
+  static const String addChildPasswordLabel = 'كلمة المرور';
+  static const String addChildBirthDateHint = 'تاريخ الميلاد (YYYY-MM-DD)';
+  static const String addChildDeathDateRequiredLabel =
+      'تاريخ الوفاة (YYYY-MM-DD)';
+  static const String addChildDeathDateOptionalLabel =
+      'تاريخ الوفاة (اختياري)';
+  static const String addChildSubmitButton = 'إرسال الطلب';
+
+  // Tree — member preview bottom sheet
+  static const String memberPreviewBranchPrefix = 'فرع ';
+  static const String memberPreviewFatherLabel = 'اسم الاب';
+  static const String memberPreviewMotherLabel = 'اسم الام';
+  static const String memberPreviewBirthDateLabel = 'تاريخ الميلاد';
+  static const String memberPreviewCityLabel = 'المدينة';
+  static const String memberPreviewWifeLabel = 'الزوجة';
+  static const String memberPreviewChildrenLabel = 'الابناء';
+  static const String memberPreviewChildrenLineSuffix = ' ابناء';
+  static const String memberPreviewNoExtraData = 'لا توجد بيانات إضافية';
+  static const String memberPreviewViewProfile = 'عرض الملف الشخصي';
+
+  /// Arabic month names; index [1] = January … [12] = December (index 0 unused).
+  static const List<String> monthNamesArabic = [
+    '',
+    'يناير',
+    'فبراير',
+    'مارس',
+    'أبريل',
+    'مايو',
+    'يونيو',
+    'يوليو',
+    'أغسطس',
+    'سبتمبر',
+    'أكتوبر',
+    'نوفمبر',
+    'ديسمبر',
+  ];
+
+  static String treeBranchLine(String branchName) => '$memberPreviewBranchPrefix$branchName';
+
+  static String addChildTreeParentLine(String parentName) =>
+      '$addChildTreeParentLinePrefix$parentName';
+
+  static String memberPreviewChildrenLine(int count) =>
+      'لديه $count$memberPreviewChildrenLineSuffix';
+
+  static String formatDateArabicDayMonthYear(DateTime dt) {
+    final m = monthNamesArabic[dt.month];
+    return '${dt.day.toString().padLeft(2, '0')} $m ${dt.year}';
+  }
+
+
 }

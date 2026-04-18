@@ -20,6 +20,7 @@ class ApiEndpoints {
   static const String login = '/login';
   static const String membersTree = '/members/tree';
   static const String checkAuth = '/check-auth';
+  static const String addMemberPublic = '/add-member-public';
 
   // Events
   static const String event = '/event';
