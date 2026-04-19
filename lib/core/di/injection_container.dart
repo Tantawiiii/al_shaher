@@ -11,6 +11,8 @@ import 'package:al_shaher/feature/user/news/data/news_remote_data_source.dart';
 import 'package:al_shaher/feature/user/news/cubit/news_cubit.dart';
 import 'package:al_shaher/feature/user/members/data/members_remote_data_source.dart';
 import 'package:al_shaher/feature/user/members/cubit/members_cubit.dart';
+import 'package:al_shaher/feature/user/requests/data/requests_remote_data_source.dart';
+import 'package:al_shaher/feature/user/requests/cubit/request_cubit.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -83,6 +85,14 @@ Future<void> configureDependencies() async {
   );
   sl.registerFactory<MembersCubit>(
     () => MembersCubit(sl<MembersRemoteDataSource>()),
+  );
+
+  // Requests (public add-member, etc.)
+  sl.registerLazySingleton<RequestsRemoteDataSource>(
+    () => RequestsRemoteDataSource(sl<NetworkService>(), sl<AuthLocalStorage>()),
+  );
+  sl.registerFactory<RequestCubit>(
+    () => RequestCubit(sl<RequestsRemoteDataSource>()),
   );
 }
 

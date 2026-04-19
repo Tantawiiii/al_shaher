@@ -1,5 +1,4 @@
 final class AppRoutes {
-
   static const String splash = '/';
   static const String onBoarding = '/onBoarding';
   static const String login = '/login';
@@ -20,5 +19,5 @@ final class AppRoutes {
   static const String addNews = '/addNews';
   static const String notifications = '/notifications';
 
+  static const String submitRequest = '/submitRequest';
 }
-

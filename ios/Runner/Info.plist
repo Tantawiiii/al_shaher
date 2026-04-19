@@ -45,5 +45,9 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>نحتاج الإذن لحفظ صورة شجرة العائلة في معرض الصور.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>نحتاج الإذن لحفظ صورة شجرة العائلة في معرض الصور.</string>
 </dict>
 </plist>

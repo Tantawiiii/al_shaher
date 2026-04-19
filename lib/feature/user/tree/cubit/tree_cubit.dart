@@ -70,6 +70,8 @@ class TreeCubit extends Cubit<TreeState> {
           motherName: node.motherName,
           wifeName: node.wifeName,
           active: node.active,
+          imageUrl: node.imageUrl,
+          image: node.image,
           branch: node.branch,
           children: nameMatches ? node.children : filteredChildren,
         ));

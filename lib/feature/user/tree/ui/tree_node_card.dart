@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -10,11 +11,13 @@ class TreeNodeCard extends StatelessWidget {
     required this.member,
     required this.isCurrentUser,
     this.onAddChild,
+    this.onTap,
   });
 
   final TreeMemberModel member;
   final bool isCurrentUser;
   final VoidCallback? onAddChild;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +36,10 @@ class TreeNodeCard extends StatelessWidget {
   Widget _buildCard(BuildContext context) {
     final isDead = member.isDead;
 
-    return Container(
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      child: Container(
       width: 140.w,
       padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 12.h),
       decoration: BoxDecoration(
@@ -115,12 +121,14 @@ class TreeNodeCard extends StatelessWidget {
           _buildAvatar(),
         ],
       ),
+      ),
     );
   }
 
   Widget _buildAvatar() {
     final isDead = member.isDead;
     final initials = member.name.isNotEmpty ? member.name[0] : '?';
+    final photoUrl = member.avatarUrl;
 
     return Stack(
       children: [
@@ -152,16 +160,43 @@ class TreeNodeCard extends StatelessWidget {
               ),
             ],
           ),
-          child: Center(
-            child: Text(
-              initials,
-              style: TextStyle(
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w700,
-                color: AppColors.white,
-              ),
-            ),
-          ),
+          clipBehavior: Clip.antiAlias,
+          child: photoUrl != null
+              ? CachedNetworkImage(
+                  imageUrl: photoUrl,
+                  fit: BoxFit.cover,
+                  fadeInDuration: Duration.zero,
+                  placeholder: (_, __) => Center(
+                    child: SizedBox(
+                      width: 18.r,
+                      height: 18.r,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: AppColors.white.withOpacity(0.9),
+                      ),
+                    ),
+                  ),
+                  errorWidget: (_, __, ___) => Center(
+                    child: Text(
+                      initials,
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.white,
+                      ),
+                    ),
+                  ),
+                )
+              : Center(
+                  child: Text(
+                    initials,
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.white,
+                    ),
+                  ),
+                ),
         ),
         if (isDead)
           Positioned(

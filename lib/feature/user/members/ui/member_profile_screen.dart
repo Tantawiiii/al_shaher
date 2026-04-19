@@ -88,9 +88,10 @@ class _MemberProfileScreenState extends State<MemberProfileScreen> {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: AppColors.primaryColor100,
-        borderRadius: BorderRadius.vertical(
-          bottom: Radius.circular(32.r),
+        gradient: const LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [AppColors.primaryColor700, AppColors.primaryColor600],
         ),
       ),
       child: SafeArea(
@@ -137,8 +138,8 @@ class _MemberProfileScreenState extends State<MemberProfileScreen> {
 
   Widget _buildAvatar(MemberDetailModel member) {
     return Container(
-      width: 110.r,
-      height: 110.r,
+      width: 100.r,
+      height: 100.r,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: AppColors.primaryColor200,
@@ -183,32 +184,35 @@ class _MemberProfileScreenState extends State<MemberProfileScreen> {
         children: [
           if (member.father != null)
             _InfoRow(
-              label: 'اسم الاب',
+              label: AppTexts.fatherName,
               value: member.father!.name,
               icon: Icons.person_outline,
             ),
           if (member.motherName != null && member.motherName!.isNotEmpty)
             _InfoRow(
-              label: 'اسم الام',
+              label: AppTexts.motherName,
               value: member.motherName!,
               icon: Icons.person_outline,
               iconColor: AppColors.primaryColor400,
             ),
           if (member.dateOfBirth != null && member.dateOfBirth!.isNotEmpty)
             _InfoRow(
-              label: 'تاريخ الميلاد',
+              label: AppTexts.birthdate,
               value: _formatDate(member.dateOfBirth!),
               icon: Icons.groups_outlined,
             ),
           if (member.dead)
             _InfoRow(
-              label: 'متوفي',
-              value: '',
+              label: AppTexts.death,
+              value: (member.dateOfDeath != null &&
+                      member.dateOfDeath!.isNotEmpty)
+                  ? _formatDate(member.dateOfDeath!)
+                  : 'نعم',
               icon: Icons.groups_outlined,
             ),
           if (member.wifeName != null && member.wifeName!.isNotEmpty)
             _InfoRow(
-              label: 'الزوجة',
+              label: AppTexts.wife,
               value: member.wifeName!,
               icon: Icons.person_outline,
               iconColor: AppColors.primaryColor400,
@@ -248,7 +252,7 @@ class _MemberProfileScreenState extends State<MemberProfileScreen> {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  'الابناء',
+                  AppTexts.children,
                   style: TextStyle(
                     fontSize: 12.sp,
                     color: AppColors.neutral500,
@@ -259,7 +263,7 @@ class _MemberProfileScreenState extends State<MemberProfileScreen> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Text(
-                      '${children.length} ابناء',
+                      '${children.length} ${AppTexts.children}',
                       style: TextStyle(
                         fontSize: 16.sp,
                         fontWeight: FontWeight.bold,
@@ -336,11 +340,7 @@ class _MemberProfileScreenState extends State<MemberProfileScreen> {
   String _formatDate(String raw) {
     final dt = DateTime.tryParse(raw);
     if (dt == null) return raw;
-    const months = [
-      '', 'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
-      'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر',
-    ];
-    return '${dt.day.toString().padLeft(2, '0')} ${months[dt.month]} ${dt.year}';
+    return AppTexts.formatDateArabicDayMonthYear(dt);
   }
 }
 
@@ -358,16 +358,16 @@ class _BackRow extends StatelessWidget {
             children: [
               Icon(
                 Icons.arrow_back_ios_outlined,
-                color: AppColors.primaryColor700,
-                size: 16.sp,
+                color: AppColors.white,
+                size: 18.sp,
               ),
-              SizedBox(width: 4.w),
+              SizedBox(width: 6.w),
               Text(
                 AppTexts.registerBack,
                 style: TextStyle(
-                  fontSize: 16.sp,
+                  fontSize: 18.sp,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.primaryColor700,
+                  color: AppColors.white,
                 ),
               ),
             ],

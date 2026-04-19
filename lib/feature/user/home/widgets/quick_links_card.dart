@@ -45,7 +45,7 @@ class QuickLinksCard extends StatelessWidget {
           _QuickLinkItem(
             icon: Icons.edit_document,
             title: AppTexts.orderRequest,
-            onTap: () {},
+            onTap: () =>  Navigator.pushNamed(context, AppRoutes.submitRequest),
           ),
         ],
       ),

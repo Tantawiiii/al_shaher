@@ -1,3 +1,4 @@
+import 'package:al_shaher/core/constant/app_texts.dart';
 import 'package:al_shaher/core/routing/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -29,17 +30,20 @@ class HomeDrawer extends StatelessWidget {
                   children: [
                     _buildMenuItem(
                       icon: Icons.home_outlined,
-                      title: 'الرئيسية',
+                      title: AppTexts.home,
                       onTap: () => Navigator.pop(context),
                     ),
                     _buildMenuItem(
                       icon: Icons.assignment_outlined,
-                      title: 'قائمة طلباتي',
-                      onTap: () {},
+                      title: AppTexts.orderRequest,
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.pushNamed(context, AppRoutes.submitRequest);
+                      },
                     ),
                     _buildMenuItem(
                       icon: Icons.people_outline,
-                      title: 'شجرة العائلة',
+                      title: AppTexts.treeTitle,
                       onTap: () {
                         Navigator.pop(context);
                         Navigator.pushNamed(context, AppRoutes.familyTree);
@@ -47,7 +51,7 @@ class HomeDrawer extends StatelessWidget {
                     ),
                     _buildMenuItem(
                       icon: Icons.article_outlined,
-                      title: 'اخبار العائلة',
+                      title: AppTexts.familyNews,
                       onTap: () {
                         Navigator.pop(context);
                         Navigator.pushNamed(context, AppRoutes.news);
@@ -55,16 +59,11 @@ class HomeDrawer extends StatelessWidget {
                     ),
                     _buildMenuItem(
                       icon: Icons.calendar_today_outlined,
-                      title: 'المناسبات',
+                      title: AppTexts.events,
                       onTap: () {
                         Navigator.pop(context);
                         Navigator.pushNamed(context, AppRoutes.events);
                       },
-                    ),
-                    _buildMenuItem(
-                      icon: Icons.access_time_outlined,
-                      title: 'ادوات المشرفين',
-                      onTap: () {},
                     ),
                   ],
                 ),
@@ -72,17 +71,17 @@ class HomeDrawer extends StatelessWidget {
               const Divider(),
               _buildMenuItem(
                 icon: Icons.info_outline,
-                title: 'عن التطبيق',
+                title: AppTexts.aboutApp,
                 onTap: () {},
               ),
               _buildMenuItem(
                 icon: Icons.settings_outlined,
-                title: 'الاعدادات',
+                title: AppTexts.setting ,
                 onTap: () {},
               ),
               _buildMenuItem(
                 icon: Icons.logout_rounded,
-                title: 'تسجيل خروج',
+                title: AppTexts.logout,
                 iconColor: AppColors.error600,
                 titleColor: AppColors.error600,
                 onTap: () => _onLogout(context),
