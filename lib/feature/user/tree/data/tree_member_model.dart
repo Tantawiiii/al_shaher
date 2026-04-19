@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 
+import '../../../../core/utils/media_url.dart';
+
 /// Media record returned on tree members when an uploaded image exists.
 @immutable
 class TreeMemberImageModel {
@@ -37,24 +39,8 @@ class TreeMemberImageModel {
   }
 }
 
-/// Collapses duplicate slashes in the URL path (e.g. `/storage//images/...`).
-String? normalizeTreeMediaUrl(String? raw) {
-  if (raw == null) return null;
-  final trimmed = raw.trim();
-  if (trimmed.isEmpty) return null;
-  final schemeIdx = trimmed.indexOf('://');
-  if (schemeIdx == -1) return trimmed.replaceAll(RegExp(r'/+'), '/');
-  final beforePath = trimmed.substring(0, schemeIdx + 3);
-  var rest = trimmed.substring(schemeIdx + 3);
-  final slash = rest.indexOf('/');
-  if (slash == -1) return trimmed;
-  final authority = rest.substring(0, slash);
-  var path = rest.substring(slash);
-  while (path.contains('//')) {
-    path = path.replaceAll('//', '/');
-  }
-  return '$beforePath$authority$path';
-}
+/// Same as [normalizeMediaUrl]; kept for existing call sites.
+String? normalizeTreeMediaUrl(String? raw) => normalizeMediaUrl(raw);
 
 @immutable
 class TreeBranch {

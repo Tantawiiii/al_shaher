@@ -81,8 +81,10 @@ class _LoginScreenState extends State<LoginScreen> {
           p.status != c.status || p.errorMessage != c.errorMessage,
       listener: (context, state) {
         if (state.status == LoginStatus.success) {
+          final targetRoute =
+              state.userType == 'admin' ? AppRoutes.adminHome : AppRoutes.home;
           Navigator.of(context).pushNamedAndRemoveUntil(
-            AppRoutes.home,
+            targetRoute,
             (route) => false,
           );
         } else if (state.status == LoginStatus.failure &&

@@ -204,8 +204,8 @@ class _MemberProfileScreenState extends State<MemberProfileScreen> {
           if (member.dead)
             _InfoRow(
               label: AppTexts.death,
-              value: (member.dateOfDeath != null &&
-                      member.dateOfDeath!.isNotEmpty)
+              value:
+                  (member.dateOfDeath != null && member.dateOfDeath!.isNotEmpty)
                   ? _formatDate(member.dateOfDeath!)
                   : 'نعم',
               icon: Icons.groups_outlined,
@@ -223,8 +223,7 @@ class _MemberProfileScreenState extends State<MemberProfileScreen> {
               value: member.city!,
               icon: Icons.location_on_outlined,
             ),
-          if (member.children.isNotEmpty)
-            _buildChildrenRow(member.children),
+          if (member.children.isNotEmpty) _buildChildrenRow(member.children),
         ],
       ),
     );
@@ -315,8 +314,8 @@ class _MemberProfileScreenState extends State<MemberProfileScreen> {
               border: Border.all(color: AppColors.white, width: 2.w),
             ),
             clipBehavior: Clip.antiAlias,
-            child: display[i].imageUrl != null &&
-                    display[i].imageUrl!.isNotEmpty
+            child:
+                display[i].imageUrl != null && display[i].imageUrl!.isNotEmpty
                 ? CachedNetworkImage(
                     imageUrl: display[i].imageUrl!,
                     fit: BoxFit.cover,

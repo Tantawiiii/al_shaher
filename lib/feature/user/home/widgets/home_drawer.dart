@@ -23,7 +23,7 @@ class HomeDrawer extends StatelessWidget {
             children: [
               _buildCloseButton(context),
               _buildLogo(),
-              20.verticalSpace,
+              14.verticalSpace,
               Expanded(
                 child: ListView(
                   padding: EdgeInsets.zero,
@@ -39,6 +39,12 @@ class HomeDrawer extends StatelessWidget {
                       onTap: () {
                         Navigator.pop(context);
                         Navigator.pushNamed(context, AppRoutes.submitRequest);
+                      },
+                    ),
+                    _buildMenuItem(
+                      icon: Icons.flutter_dash_outlined,
+                      title: AppTexts.myRequests,
+                      onTap: () {
                       },
                     ),
                     _buildMenuItem(
@@ -72,12 +78,18 @@ class HomeDrawer extends StatelessWidget {
               _buildMenuItem(
                 icon: Icons.info_outline,
                 title: AppTexts.aboutApp,
-                onTap: () {},
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context, AppRoutes.aboutAppDetail);
+                },
               ),
               _buildMenuItem(
                 icon: Icons.settings_outlined,
-                title: AppTexts.setting ,
-                onTap: () {},
+                title: AppTexts.setting,
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context, AppRoutes.settings);
+                },
               ),
               _buildMenuItem(
                 icon: Icons.logout_rounded,
@@ -98,17 +110,14 @@ class HomeDrawer extends StatelessWidget {
     final navigator = Navigator.of(context);
     navigator.pop();
     await sl<AuthLocalStorage>().clear();
-    navigator.pushNamedAndRemoveUntil(
-      AppRoutes.welcome,
-      (_) => false,
-    );
+    navigator.pushNamedAndRemoveUntil(AppRoutes.welcome, (_) => false);
   }
 
   Widget _buildCloseButton(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
       child: Align(
-        alignment: Alignment.centerLeft, // X button on the left in RTL drawer
+        alignment: Alignment.centerLeft,
         child: InkWell(
           onTap: () => Navigator.pop(context),
           child: Container(
@@ -126,10 +135,10 @@ class HomeDrawer extends StatelessWidget {
 
   Widget _buildLogo() {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 20.h),
+      padding: EdgeInsets.symmetric(vertical: 10.h),
       child: Image.asset(
         AppAssets.greenLogo,
-        height: 80.h,
+        height: 70.h,
         fit: BoxFit.contain,
       ),
     );
@@ -147,12 +156,12 @@ class HomeDrawer extends StatelessWidget {
       leading: Icon(
         icon,
         color: iconColor ?? AppColors.primaryColor500,
-        size: 28.sp,
+        size: 24.sp,
       ),
       title: Text(
         title,
         style: TextStyle(
-          fontSize: 18.sp,
+          fontSize: 16.sp,
           fontWeight: FontWeight.w600,
           color: titleColor ?? AppColors.neutral700,
         ),

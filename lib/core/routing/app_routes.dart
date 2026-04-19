@@ -20,4 +20,10 @@ final class AppRoutes {
   static const String notifications = '/notifications';
 
   static const String submitRequest = '/submitRequest';
+
+  static const String settings = '/settings';
+  static const String aboutAppDetail = '/aboutAppDetail';
+
+  // Admin
+  static const String adminHome = '/adminHome';
 }

@@ -16,14 +16,14 @@ class LoginCubit extends Cubit<LoginState> {
   }) async {
     emit(state.copyWith(status: LoginStatus.loading, clearError: true));
     try {
-      final phone = _normalizePhone(phoneDigits);
-      final result = await _remote.login(phone: phone, password: password);
+     // final phone = _normalizePhone(phoneDigits);
+      final result = await _remote.login(phone: phoneDigits, password: password);
       await _auth.saveSession(
         token: result.token,
         type: result.type,
         user: result.user,
       );
-      emit(state.copyWith(status: LoginStatus.success));
+      emit(state.copyWith(status: LoginStatus.success, userType: result.type));
     } catch (e) {
       emit(
         state.copyWith(
@@ -34,10 +34,10 @@ class LoginCubit extends Cubit<LoginState> {
     }
   }
 
-  String _normalizePhone(String digits) {
-    final trimmed = digits.trim().replaceAll(RegExp(r'\s'), '');
-    if (trimmed.startsWith('+')) return trimmed;
-    final d = trimmed.startsWith('0') ? trimmed.substring(1) : trimmed;
-    return '+966$d';
-  }
+  // String _normalizePhone(String digits) {
+  //   final trimmed = digits.trim().replaceAll(RegExp(r'\s'), '');
+  //   if (trimmed.startsWith('+')) return trimmed;
+  //   final d = trimmed.startsWith('0') ? trimmed.substring(1) : trimmed;
+  //   return '+966$d';
+  // }
 }

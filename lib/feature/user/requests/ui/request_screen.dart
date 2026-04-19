@@ -6,11 +6,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/constant/app_colors.dart';
 import '../../../../core/constant/app_texts.dart';
 import '../../../../core/di/injection_container.dart';
+import '../../../../core/utils/arabic_digits.dart';
+import '../../../../core/widgets/app_form_text_field.dart';
 import '../../tree/data/auth_user_model.dart';
 import '../../tree/data/tree_remote_data_source.dart';
 import '../cubit/request_cubit.dart';
 import '../cubit/request_state.dart';
-
 
 class RequestScreen extends StatefulWidget {
   const RequestScreen({super.key});
@@ -21,8 +22,11 @@ class RequestScreen extends StatefulWidget {
 
 class _RequestScreenState extends State<RequestScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _dateFormKey = GlobalKey<FormFieldState<String>>();
   final _nameCtrl = TextEditingController();
   final _nationalIdCtrl = TextEditingController();
+  final _phoneCtrl = TextEditingController();
+  final _passwordCtrl = TextEditingController();
   final _dateCtrl = TextEditingController();
 
   AuthUserModel? _currentUser;
@@ -32,8 +36,6 @@ class _RequestScreenState extends State<RequestScreen> {
   String _requestKind = 'newborn';
   String _gender = 'male';
   DateTime? _pickedDate;
-
-  static const _fillField = Color(0xFFF5F5F5);
 
   @override
   void initState() {
@@ -62,6 +64,8 @@ class _RequestScreenState extends State<RequestScreen> {
   void dispose() {
     _nameCtrl.dispose();
     _nationalIdCtrl.dispose();
+    _phoneCtrl.dispose();
+    _passwordCtrl.dispose();
     _dateCtrl.dispose();
     super.dispose();
   }
@@ -73,7 +77,7 @@ class _RequestScreenState extends State<RequestScreen> {
       labelStyle: TextStyle(fontSize: 14.sp, color: AppColors.neutral500),
       floatingLabelBehavior: FloatingLabelBehavior.always,
       filled: true,
-      fillColor: _fillField,
+      fillColor: AppColors.neutral100,
       suffixIcon: suffixIcon,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18.r),
@@ -85,7 +89,10 @@ class _RequestScreenState extends State<RequestScreen> {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18.r),
-        borderSide: const BorderSide(color: AppColors.primaryColor500, width: 1.2),
+        borderSide: const BorderSide(
+          color: AppColors.primaryColor500,
+          width: 1.2,
+        ),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18.r),
@@ -96,6 +103,63 @@ class _RequestScreenState extends State<RequestScreen> {
         borderSide: const BorderSide(color: AppColors.error600),
       ),
       contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+    );
+  }
+
+  Widget _validatedAppField({
+    Key? formFieldKey,
+    required TextEditingController controller,
+    required String hintText,
+    String? Function(String? value)? validator,
+    TextInputType? keyboardType,
+    TextInputAction? textInputAction,
+    bool enabled = true,
+    bool readOnly = false,
+    VoidCallback? onTap,
+    Widget? trailing,
+    String? helperText,
+    bool obscureText = false,
+    bool showPasswordToggle = false,
+  }) {
+    return FormField<String>(
+      key: formFieldKey,
+      validator: validator,
+      builder: (state) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            AppFormTextField(
+              controller: controller,
+              hintText: hintText,
+              helperText: helperText,
+              keyboardType: keyboardType,
+              textInputAction: textInputAction,
+              enabled: enabled,
+              readOnly: readOnly,
+              onTap: onTap,
+              trailing: trailing,
+              obscureText: obscureText,
+              showPasswordToggle: showPasswordToggle,
+              fillColor: AppColors.neutral100,
+              borderRadius: 18.r,
+              focusedBorderColor: AppColors.primaryColor500,
+              onChanged: (s) => state.didChange(s),
+            ),
+            if (state.hasError)
+              Padding(
+                padding: EdgeInsets.only(top: 6.h, right: 4.w),
+                child: Text(
+                  state.errorText!,
+                  style: TextStyle(
+                    fontSize: 12.sp,
+                    color: AppColors.error600,
+                  ),
+                  textAlign: TextAlign.right,
+                ),
+              ),
+          ],
+        );
+      },
     );
   }
 
@@ -125,6 +189,7 @@ class _RequestScreenState extends State<RequestScreen> {
         _dateCtrl.text =
             '${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}';
       });
+      _dateFormKey.currentState?.didChange(_dateCtrl.text);
     }
   }
 
@@ -143,23 +208,27 @@ class _RequestScreenState extends State<RequestScreen> {
       return;
     }
 
-    final nationalId = _nationalIdCtrl.text.trim();
-    final phone = (_currentUser!.phone != null && _currentUser!.phone!.isNotEmpty)
-        ? _currentUser!.phone!.trim()
-        : nationalId;
-    final password = nationalId.length >= 6
-        ? nationalId
-        : '${nationalId}000000'.substring(0, 8);
+    final nationalId = westernizeDigits(_nationalIdCtrl.text.trim());
+    final phone = _normalizePhone(westernizeDigits(_phoneCtrl.text.trim()));
+    final password = westernizeDigits(_passwordCtrl.text.trim());
 
     context.read<RequestCubit>().submitSonRequest(
-          fatherId: _currentUser!.id,
-          name: _nameCtrl.text.trim(),
-          gender: _gender,
-          phone: phone,
-          nationalId: nationalId,
-          password: password,
-          dateOfBirth: _dateCtrl.text.trim(),
-        );
+      fatherId: _currentUser!.id,
+      name: _nameCtrl.text.trim(),
+      gender: _gender,
+      phone: phone,
+      nationalId: nationalId,
+      password: password,
+      dateOfBirth: _dateCtrl.text.trim(),
+    );
+  }
+
+  /// Same rules as login/register: local digits → `+966…`.
+  String _normalizePhone(String digits) {
+    final trimmed = digits.replaceAll(RegExp(r'\s'), '');
+    if (trimmed.startsWith('+')) return trimmed;
+    final d = trimmed.startsWith('0') ? trimmed.substring(1) : trimmed;
+    return '+966$d';
   }
 
   Future<void> _showSuccessDialog() {
@@ -257,9 +326,9 @@ class _RequestScreenState extends State<RequestScreen> {
             _showSuccessDialog();
           } else if (state.status == RequestStatus.failure &&
               state.errorMessage != null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.errorMessage!)),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(state.errorMessage!)));
           }
         },
         child: Scaffold(
@@ -338,211 +407,258 @@ class _RequestScreenState extends State<RequestScreen> {
                           ),
                         )
                       : _userError != null
-                          ? Center(
-                              child: Padding(
-                                padding: EdgeInsets.all(24.w),
+                      ? Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(24.w),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  _userError!,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 14.sp,
+                                    color: AppColors.neutral600,
+                                  ),
+                                ),
+                                SizedBox(height: 16.h),
+                                TextButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      _loadingUser = true;
+                                      _userError = null;
+                                    });
+                                    _loadCurrentUser();
+                                  },
+                                  child: const Text(AppTexts.relationRetry),
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
+                      : BlocBuilder<RequestCubit, RequestState>(
+                          builder: (context, state) {
+                            final submitting =
+                                state.status == RequestStatus.loading;
+                            return SingleChildScrollView(
+                              padding: EdgeInsets.fromLTRB(
+                                20.w,
+                                28.h,
+                                20.w,
+                                24.h,
+                              ),
+                              child: Form(
+                                key: _formKey,
                                 child: Column(
-                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
                                   children: [
                                     Text(
-                                      _userError!,
-                                      textAlign: TextAlign.center,
+                                      AppTexts.requestAddUpdateTitle,
                                       style: TextStyle(
-                                        fontSize: 14.sp,
-                                        color: AppColors.neutral600,
+                                        fontSize: 20.sp,
+                                        fontWeight: FontWeight.w700,
+                                        color: AppColors.primaryColor700,
                                       ),
+                                      textAlign: TextAlign.right,
+                                    ),
+                                    SizedBox(height: 8.h),
+                                    Text(
+                                      AppTexts.requestAddUpdateSubtitle,
+                                      style: TextStyle(
+                                        fontSize: 13.sp,
+                                        height: 1.4,
+                                        color: AppColors.neutral500,
+                                      ),
+                                      textAlign: TextAlign.right,
+                                    ),
+                                    SizedBox(height: 24.h),
+                                    DropdownButtonFormField<String>(
+                                      value: _requestKind,
+                                      decoration: _fieldDecoration(
+                                        AppTexts.requestModificationTypeLabel,
+                                      ),
+                                      items: [
+                                        DropdownMenuItem(
+                                          value: 'newborn',
+                                          child: Text(
+                                            AppTexts.requestTypeNewborn,
+                                          ),
+                                        ),
+                                        DropdownMenuItem(
+                                          value: 'update',
+                                          child: Text(
+                                            AppTexts.requestTypeUpdateStatus,
+                                          ),
+                                        ),
+                                      ],
+                                      onChanged: submitting
+                                          ? null
+                                          : (v) {
+                                              if (v != null) {
+                                                setState(
+                                                  () => _requestKind = v,
+                                                );
+                                              }
+                                            },
                                     ),
                                     SizedBox(height: 16.h),
-                                    TextButton(
-                                      onPressed: () {
-                                        setState(() {
-                                          _loadingUser = true;
-                                          _userError = null;
-                                        });
-                                        _loadCurrentUser();
+                                    _validatedAppField(
+                                      controller: _nameCtrl,
+                                      hintText: AppTexts.requestNewbornNameLabel,
+                                      textInputAction: TextInputAction.next,
+                                      enabled: !submitting,
+                                      validator: (v) =>
+                                          (v == null || v.trim().isEmpty)
+                                          ? AppTexts.fieldRequired
+                                          : null,
+                                    ),
+                                    SizedBox(height: 16.h),
+                                    _validatedAppField(
+                                      controller: _nationalIdCtrl,
+                                      hintText:
+                                          AppTexts.requestNewbornNationalIdLabel,
+                                      keyboardType: TextInputType.number,
+                                      textInputAction: TextInputAction.next,
+                                      enabled: !submitting,
+                                      validator: (v) =>
+                                          (v == null || v.trim().isEmpty)
+                                          ? AppTexts.fieldRequired
+                                          : null,
+                                    ),
+                                    SizedBox(height: 16.h),
+                                    _validatedAppField(
+                                      controller: _phoneCtrl,
+                                      hintText: AppTexts.requestNewbornPhoneLabel,
+                                      helperText: AppTexts.requestNewbornPhoneHint,
+                                      keyboardType: TextInputType.phone,
+                                      textInputAction: TextInputAction.next,
+                                      enabled: !submitting,
+                                      validator: (v) {
+                                        final t = westernizeDigits(
+                                          (v ?? '').trim(),
+                                        );
+                                        if (t.isEmpty) {
+                                          return AppTexts.fieldRequired;
+                                        }
+                                        final n = _normalizePhone(t);
+                                        if (n.replaceFirst('+966', '').length <
+                                            9) {
+                                          return AppTexts.requestInvalidPhone;
+                                        }
+                                        return null;
                                       },
-                                      child: const Text(AppTexts.relationRetry),
+                                    ),
+                                    SizedBox(height: 16.h),
+                                    _validatedAppField(
+                                      controller: _passwordCtrl,
+                                      hintText:
+                                          AppTexts.requestNewbornPasswordLabel,
+                                      textInputAction: TextInputAction.next,
+                                      enabled: !submitting,
+                                      obscureText: true,
+                                      showPasswordToggle: true,
+                                      validator: (v) {
+                                        final p = westernizeDigits(
+                                          (v ?? '').trim(),
+                                        );
+                                        if (p.isEmpty) {
+                                          return AppTexts.fieldRequired;
+                                        }
+                                        if (p.length < 6) {
+                                          return AppTexts.requestPasswordMinLength;
+                                        }
+                                        return null;
+                                      },
+                                    ),
+                                    SizedBox(height: 16.h),
+                                    _validatedAppField(
+                                      formFieldKey: _dateFormKey,
+                                      controller: _dateCtrl,
+                                      hintText: AppTexts.registerBirthDate,
+                                      readOnly: true,
+                                      enabled: !submitting,
+                                      onTap: submitting ? null : _pickDate,
+                                      trailing: IconButton(
+                                        onPressed:
+                                            submitting ? null : _pickDate,
+                                        icon: Icon(
+                                          Icons.calendar_today_outlined,
+                                          color: AppColors.neutral500,
+                                          size: 20.sp,
+                                        ),
+                                      ),
+                                      validator: (v) =>
+                                          (v == null || v.trim().isEmpty)
+                                          ? AppTexts.fieldRequired
+                                          : null,
+                                    ),
+                                    SizedBox(height: 16.h),
+                                    DropdownButtonFormField<String>(
+                                      value: _gender,
+                                      decoration: _fieldDecoration(
+                                        AppTexts.registerGender,
+                                      ),
+                                      items: [
+                                        DropdownMenuItem(
+                                          value: 'male',
+                                          child: Text(
+                                            AppTexts.registerGenderMale,
+                                          ),
+                                        ),
+                                        DropdownMenuItem(
+                                          value: 'female',
+                                          child: Text(
+                                            AppTexts.registerGenderFemale,
+                                          ),
+                                        ),
+                                      ],
+                                      onChanged: submitting
+                                          ? null
+                                          : (v) {
+                                              if (v != null) {
+                                                setState(() => _gender = v);
+                                              }
+                                            },
+                                    ),
+                                    SizedBox(height: 32.h),
+                                    SizedBox(
+                                      height: 54.h,
+                                      width: double.infinity,
+                                      child: ElevatedButton(
+                                        onPressed: submitting ? null : _submit,
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor:
+                                              AppColors.primaryColor600,
+                                          foregroundColor: AppColors.white,
+                                          elevation: 0,
+                                          shape: const StadiumBorder(),
+                                        ),
+                                        child: submitting
+                                            ? SizedBox(
+                                                width: 24.r,
+                                                height: 24.r,
+                                                child:
+                                                    const CircularProgressIndicator(
+                                                      strokeWidth: 2.4,
+                                                      color: AppColors.white,
+                                                    ),
+                                              )
+                                            : Text(
+                                                AppTexts.requestSubmitButton,
+                                                style: TextStyle(
+                                                  fontSize: 16.sp,
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                              ),
+                                      ),
                                     ),
                                   ],
                                 ),
                               ),
-                            )
-                          : BlocBuilder<RequestCubit, RequestState>(
-                              builder: (context, state) {
-                                final submitting =
-                                    state.status == RequestStatus.loading;
-                                return SingleChildScrollView(
-                                  padding: EdgeInsets.fromLTRB(
-                                    20.w,
-                                    28.h,
-                                    20.w,
-                                    24.h,
-                                  ),
-                                  child: Form(
-                                    key: _formKey,
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.stretch,
-                                      children: [
-                                        Text(
-                                          AppTexts.requestAddUpdateTitle,
-                                          style: TextStyle(
-                                            fontSize: 20.sp,
-                                            fontWeight: FontWeight.w700,
-                                            color: AppColors.primaryColor700,
-                                          ),
-                                          textAlign: TextAlign.right,
-                                        ),
-                                        SizedBox(height: 8.h),
-                                        Text(
-                                          AppTexts.requestAddUpdateSubtitle,
-                                          style: TextStyle(
-                                            fontSize: 13.sp,
-                                            height: 1.4,
-                                            color: AppColors.neutral500,
-                                          ),
-                                          textAlign: TextAlign.right,
-                                        ),
-                                        SizedBox(height: 24.h),
-                                        DropdownButtonFormField<String>(
-                                          value: _requestKind,
-                                          decoration: _fieldDecoration(
-                                            AppTexts.requestModificationTypeLabel,
-                                          ),
-                                          items: [
-                                            DropdownMenuItem(
-                                              value: 'newborn',
-                                              child: Text(AppTexts.requestTypeNewborn),
-                                            ),
-                                            DropdownMenuItem(
-                                              value: 'update',
-                                              child: Text(AppTexts.requestTypeUpdateStatus),
-                                            ),
-                                          ],
-                                          onChanged: submitting
-                                              ? null
-                                              : (v) {
-                                                  if (v != null) {
-                                                    setState(
-                                                        () => _requestKind = v);
-                                                  }
-                                                },
-                                        ),
-                                        SizedBox(height: 16.h),
-                                        TextFormField(
-                                          controller: _nameCtrl,
-                                          textInputAction: TextInputAction.next,
-                                          decoration: _decoration(
-                                            AppTexts.requestNewbornNameLabel,
-                                          ),
-                                          validator: (v) =>
-                                              (v == null || v.trim().isEmpty)
-                                                  ? AppTexts.fieldRequired
-                                                  : null,
-                                        ),
-                                        SizedBox(height: 16.h),
-                                        TextFormField(
-                                          controller: _nationalIdCtrl,
-                                          keyboardType: TextInputType.number,
-                                          textInputAction: TextInputAction.next,
-                                          decoration: _decoration(
-                                            AppTexts.requestNewbornNationalIdLabel,
-                                          ),
-                                          validator: (v) =>
-                                              (v == null || v.trim().isEmpty)
-                                                  ? AppTexts.fieldRequired
-                                                  : null,
-                                        ),
-                                        SizedBox(height: 16.h),
-                                        TextFormField(
-                                          controller: _dateCtrl,
-                                          readOnly: true,
-                                          onTap: submitting
-                                              ? null
-                                              : () => _pickDate(),
-                                          decoration: _fieldDecoration(
-                                            AppTexts.registerBirthDate,
-                                            suffixIcon: IconButton(
-                                              onPressed: submitting
-                                                  ? null
-                                                  : _pickDate,
-                                              icon: Icon(
-                                                Icons.calendar_today_outlined,
-                                                color: AppColors.neutral500,
-                                                size: 20.sp,
-                                              ),
-                                            ),
-                                          ),
-                                          validator: (v) =>
-                                              (v == null || v.trim().isEmpty)
-                                                  ? AppTexts.fieldRequired
-                                                  : null,
-                                        ),
-                                        SizedBox(height: 16.h),
-                                        DropdownButtonFormField<String>(
-                                          value: _gender,
-                                          decoration: _fieldDecoration(
-                                            AppTexts.registerGender,
-                                          ),
-                                          items: [
-                                            DropdownMenuItem(
-                                              value: 'male',
-                                              child: Text(AppTexts.registerGenderMale),
-                                            ),
-                                            DropdownMenuItem(
-                                              value: 'female',
-                                              child: Text(AppTexts.registerGenderFemale),
-                                            ),
-                                          ],
-                                          onChanged: submitting
-                                              ? null
-                                              : (v) {
-                                                  if (v != null) {
-                                                    setState(
-                                                        () => _gender = v);
-                                                  }
-                                                },
-                                        ),
-                                        SizedBox(height: 32.h),
-                                        SizedBox(
-                                          height: 54.h,
-                                          width: double.infinity,
-                                          child: ElevatedButton(
-                                            onPressed:
-                                                submitting ? null : _submit,
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor:
-                                                  AppColors.primaryColor600,
-                                              foregroundColor: AppColors.white,
-                                              elevation: 0,
-                                              shape: const StadiumBorder(),
-                                            ),
-                                            child: submitting
-                                                ? SizedBox(
-                                                    width: 24.r,
-                                                    height: 24.r,
-                                                    child:
-                                                        const CircularProgressIndicator(
-                                                      strokeWidth: 2.4,
-                                                      color: AppColors.white,
-                                                    ),
-                                                  )
-                                                : Text(
-                                                    AppTexts.requestSubmitButton,
-                                                    style: TextStyle(
-                                                      fontSize: 16.sp,
-                                                      fontWeight:
-                                                          FontWeight.w700,
-                                                    ),
-                                                  ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
+                            );
+                          },
+                        ),
                 ),
               ),
             ],
@@ -551,8 +667,5 @@ class _RequestScreenState extends State<RequestScreen> {
       ),
     );
   }
-
-  InputDecoration _decoration(String label) {
-    return _fieldDecoration(label);
-  }
 }
+

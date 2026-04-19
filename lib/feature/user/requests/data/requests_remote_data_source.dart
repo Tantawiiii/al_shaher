@@ -21,8 +21,22 @@ class RequestsRemoteDataSource {
 
   String _messageFromDio(DioException e) {
     final data = e.response?.data;
-    if (data is Map && data['message'] != null) {
-      return data['message'].toString();
+    if (data is Map) {
+      final errors = data['errors'];
+      if (errors is Map) {
+        for (final entry in errors.entries) {
+          final v = entry.value;
+          if (v is List && v.isNotEmpty) {
+            return v.first.toString();
+          }
+          if (v is String && v.isNotEmpty) {
+            return v;
+          }
+        }
+      }
+      if (data['message'] != null) {
+        return data['message'].toString();
+      }
     }
     return 'حدث خطأ';
   }

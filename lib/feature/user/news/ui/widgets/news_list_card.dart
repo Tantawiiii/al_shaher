@@ -99,10 +99,11 @@ class NewsListCard extends StatelessWidget {
       return _placeholderThumb();
     }
     final img = news.gallery.first;
+    final url = img.resolvedImageUrl;
     return ClipRRect(
       borderRadius: BorderRadius.circular(10.r),
       child: CachedNetworkImage(
-        imageUrl: img.fullUrl ?? '',
+        imageUrl: url ?? '',
         width: 65.w,
         height: 65.w,
         fit: BoxFit.cover,
