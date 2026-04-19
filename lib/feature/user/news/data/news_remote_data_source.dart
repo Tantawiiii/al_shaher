@@ -40,8 +40,8 @@ class NewsRemoteDataSource {
       final raw = data['data'];
       if (raw is! List) return [];
       return raw
-          .whereType<Map<String, dynamic>>()
-          .map(NewsModel.fromJson)
+          .whereType<Map>()
+          .map((e) => NewsModel.fromJson(Map<String, dynamic>.from(e)))
           .toList();
     } on DioException catch (e) {
       throw Exception(_messageFromDio(e));
@@ -55,10 +55,11 @@ class NewsRemoteDataSource {
         options: _authOptions,
       );
       final data = res.data;
-      if (data == null || data['data'] is! Map<String, dynamic>) {
+      final payload = data?['data'];
+      if (payload is! Map) {
         throw Exception('Invalid news details response');
       }
-      return NewsModel.fromJson(data['data'] as Map<String, dynamic>);
+      return NewsModel.fromJson(Map<String, dynamic>.from(payload));
     } on DioException catch (e) {
       throw Exception(_messageFromDio(e));
     }

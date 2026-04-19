@@ -121,6 +121,7 @@ class AppTexts {
   static const String events = 'المناسبات';
   static const String news = 'الاخبار';
   static const String orderRequest = 'تقديم طلب';
+  static const String myRequests = 'طلباتي';
   static const String newComers =  'المضافون حديثا';
   static const String familyNews =  'اخبار العائلة';
 
@@ -147,6 +148,32 @@ class AppTexts {
   static const String logout = 'تسجيل خروج';
   static const String aboutApp = 'عن التطبيق';
 
+  // Settings
+  static const String settingsAccountSection = 'اعدادات الحساب';
+  static const String settingsAppSection = 'اعدادات التطبيق';
+  static const String settingsPersonalInfo = 'المعلومات الشخصية';
+  static const String settingsWhoSeesPhoto = 'من يمكنه رؤية صورتي';
+  static const String settingsPhotoVisibilityManagement = 'الادارة فقط';
+  static const String settingsPrivacyPolicy = 'سياسة الخصوصية';
+  static const String settingsShareApp = 'مشاركة التطبيق';
+  static const String settingsSupport = 'الدعم الفني';
+  static const String settingsDeveloperCompany = 'الشركة المطورة';
+  static const String settingsComingSoon = 'قريباً';
+
+  // About app (detail)
+  static const String aboutAppHeadline = 'تطبيق شجرة العائلة';
+  static const String aboutAppFamilyLine = 'اسرة ال شاهر';
+  static const String aboutAppIntro =
+      'منصة رقمية تجمع أفراد العائلة في مكان واحد، لتوثيق النسب والعلاقات والاحتفاظ بذاكرة مشتركة.';
+  static const String aboutAppWhyTitle = 'لماذا تطبيق العائلة';
+  static const String aboutAppWhyBody =
+      'يساعدكم على معرفة صلة القرابة، متابعة الأخبار والمناسبات، والحفاظ على هوية العائلة عبر الأجيال.';
+  static const String aboutAppSuggestionsTitle = 'المقترحات والتطوير';
+  static const String aboutAppSuggestionsBody =
+      'نرحب بأفكاركم لتحسين التجربة؛ يمكنكم إرسال الملاحظات عبر الدعم الفني داخل التطبيق.';
+  static const String aboutAppShareSectionTitle = 'مشاركة التطبيق';
+  static const String aboutAppShareDescription =
+      'قم بمشاركة التطبيق مع باقي افراد العائلة لتوثيق العلاقات والنسب واتمام هيكلية شجرة العائلة';
 
   // Events
   static const String eventsLoading = 'جاري تحميل المناسبات...';
@@ -239,6 +266,12 @@ class AppTexts {
   static const String requestNewbornNameLabel = 'اسم المولود';
   static const String requestNewbornNationalIdLabel =
       'رقم الهوية الوطنية للمولود';
+  static const String requestNewbornPhoneLabel = 'رقم جوال المولود';
+  static const String requestNewbornPhoneHint =
+      'مثال: 05xxxxxxxx أو +9665xxxxxxxx';
+  static const String requestInvalidPhone = 'رقم الجوال غير صالح';
+  static const String requestNewbornPasswordLabel = 'كلمة مرور حساب المولود';
+  static const String requestPasswordMinLength = 'كلمة المرور يجب ألا تقل عن ٦ أحرف';
   static const String requestSubmitButton = 'تقديم الطلب';
   static const String requestUserLoadFailed = 'تعذر تحميل بيانات المستخدم';
   static const String requestTypeUnavailable = 'هذا النوع غير متاح حالياً';
@@ -304,6 +337,12 @@ class AppTexts {
     final m = monthNamesArabic[dt.month];
     return '${dt.day.toString().padLeft(2, '0')} $m ${dt.year}';
   }
-
-
+  // Admin Dashboard
+  static const String adminDashboardTitle = 'لوحة المشرف';
+  static const String adminJoinRequests = 'طلبات الانضمام';
+  static const String adminUpdateStatus = 'تحديث الحالات';
+  static const String adminPermissions = 'الصلاحيات';
+  static const String adminActivityLog = 'سجل الحركات';
+  static const String adminStatistics = 'الإحصائيات';
+  static const String adminRegisteredThisMonth = 'المسجلين لهذا الشهر';
 }

@@ -371,7 +371,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(12.r),
             child: CachedNetworkImage(
-              imageUrl: item.fullUrl ?? '',
+              imageUrl: item.resolvedImageUrl ?? '',
               fit: BoxFit.cover,
               placeholder: (_, __) => Container(
                 color: AppColors.neutral200,
@@ -490,7 +490,7 @@ class _ImageViewerDialogState extends State<_ImageViewerDialog> {
               return InteractiveViewer(
                 child: Center(
                   child: CachedNetworkImage(
-                    imageUrl: widget.gallery[index].fullUrl ?? '',
+                    imageUrl: widget.gallery[index].resolvedImageUrl ?? '',
                     fit: BoxFit.contain,
                     placeholder: (_, __) => const Center(
                       child:

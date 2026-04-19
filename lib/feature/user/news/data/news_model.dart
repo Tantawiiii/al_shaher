@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 
+import '../../../../core/utils/media_url.dart';
+
 @immutable
 class GalleryItem {
   const GalleryItem({
@@ -19,6 +21,9 @@ class GalleryItem {
   final String? previewUrl;
   final String? fullUrl;
   final String? createdAt;
+
+  /// Best URL for loading the image in the app (handles slashes + relative preview).
+  String? get resolvedImageUrl => galleryImageUrl(fullUrl, previewUrl);
 
   factory GalleryItem.fromJson(Map<String, dynamic> json) {
     return GalleryItem(
@@ -54,15 +59,17 @@ class NewsModel {
   final String? updatedAt;
 
   String? get firstImageUrl =>
-      gallery.isNotEmpty ? gallery.first.fullUrl : null;
+      gallery.isNotEmpty ? gallery.first.resolvedImageUrl : null;
 
   factory NewsModel.fromJson(Map<String, dynamic> json) {
     final rawGallery = json['gallery'];
     final galleryList = <GalleryItem>[];
     if (rawGallery is List) {
       for (final item in rawGallery) {
-        if (item is Map<String, dynamic>) {
-          galleryList.add(GalleryItem.fromJson(item));
+        if (item is Map) {
+          galleryList.add(
+            GalleryItem.fromJson(Map<String, dynamic>.from(item)),
+          );
         }
       }
     }

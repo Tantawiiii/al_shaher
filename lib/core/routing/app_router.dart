@@ -18,6 +18,9 @@ import 'package:al_shaher/feature/user/news/ui/news_screen.dart';
 import 'package:al_shaher/feature/user/news/ui/news_detail_screen.dart';
 import 'package:al_shaher/feature/user/news/ui/add_news_screen.dart';
 import 'package:al_shaher/feature/user/notifications/notifications_screen.dart';
+import 'package:al_shaher/feature/user/setting/ui/about_app_screen.dart';
+import 'package:al_shaher/feature/user/setting/ui/settings_screen.dart';
+import 'package:al_shaher/feature/admin/home/ui/admin_home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -148,6 +151,15 @@ Route<dynamic> onGenerateAppRoute(RouteSettings settings) {
           child: const RequestScreen(),
         ),
       );
+
+    case AppRoutes.settings:
+      return MaterialPageRoute(builder: (_) => const SettingsScreen());
+
+    case AppRoutes.aboutAppDetail:
+      return MaterialPageRoute(builder: (_) => const AboutAppScreen());
+
+    case AppRoutes.adminHome:
+      return MaterialPageRoute(builder: (_) => const AdminHomeScreen());
 
     default:
       return MaterialPageRoute(

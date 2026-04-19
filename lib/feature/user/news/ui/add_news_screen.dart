@@ -345,7 +345,7 @@ class _AddNewsScreenState extends State<AddNewsScreen> {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(10.r),
                         child: Image.network(
-                          img.fullUrl ?? '',
+                          img.resolvedImageUrl ?? '',
                           width: 80.w,
                           height: 80.w,
                           fit: BoxFit.cover,
