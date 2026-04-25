@@ -34,6 +34,14 @@ class HomeDrawer extends StatelessWidget {
                       onTap: () => Navigator.pop(context),
                     ),
                     _buildMenuItem(
+                      icon: Icons.person_outline,
+                      title: AppTexts.myProfile,
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.pushNamed(context, AppRoutes.myProfile);
+                      },
+                    ),
+                    _buildMenuItem(
                       icon: Icons.assignment_outlined,
                       title: AppTexts.orderRequest,
                       onTap: () {
@@ -45,6 +53,8 @@ class HomeDrawer extends StatelessWidget {
                       icon: Icons.flutter_dash_outlined,
                       title: AppTexts.myRequests,
                       onTap: () {
+                        Navigator.pop(context);
+                        Navigator.pushNamed(context, AppRoutes.myRequests);
                       },
                     ),
                     _buildMenuItem(

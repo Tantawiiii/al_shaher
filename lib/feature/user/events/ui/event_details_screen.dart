@@ -6,7 +6,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/constant/app_colors.dart';
 import '../../../../core/constant/app_texts.dart';
+import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/app_routes.dart';
+import '../../../../core/storage/auth_local_storage.dart';
 import '../cubit/events_cubit.dart';
 import '../cubit/events_state.dart';
 import '../data/event_model.dart';
@@ -21,9 +23,12 @@ class EventDetailsScreen extends StatefulWidget {
 }
 
 class _EventDetailsScreenState extends State<EventDetailsScreen> {
+  late final bool _isAdmin;
+
   @override
   void initState() {
     super.initState();
+    _isAdmin = sl<AuthLocalStorage>().getAuthType() == 'admin';
     context.read<EventsCubit>().loadEventDetails(widget.eventId);
   }
 
@@ -99,44 +104,47 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
             ),
           ),
           const Spacer(),
-          BlocBuilder<EventsCubit, EventsState>(
-            builder: (context, state) {
-              if (state.selectedEvent == null) return SizedBox(width: 60.w);
-              return PopupMenuButton<String>(
-                icon: Icon(
-                  Icons.more_vert,
-                  color: AppColors.white,
-                  size: 24.sp,
-                ),
-                onSelected: (value) => _onMenuAction(value, state.selectedEvent!),
-                itemBuilder: (context) => [
-                  PopupMenuItem(
-                    value: 'edit',
-                    child: Row(
-                      children: [
-                        Icon(Icons.edit, size: 18.sp, color: AppColors.primaryColor600),
-                        SizedBox(width: 8.w),
-                        Text(AppTexts.eventsEdit),
-                      ],
-                    ),
+          if (_isAdmin)
+            BlocBuilder<EventsCubit, EventsState>(
+              builder: (context, state) {
+                if (state.selectedEvent == null) return SizedBox(width: 60.w);
+                return PopupMenuButton<String>(
+                  icon: Icon(
+                    Icons.more_vert,
+                    color: AppColors.white,
+                    size: 24.sp,
                   ),
-                  PopupMenuItem(
-                    value: 'delete',
-                    child: Row(
-                      children: [
-                        Icon(Icons.delete, size: 18.sp, color: AppColors.error600),
-                        SizedBox(width: 8.w),
-                        Text(
-                          AppTexts.eventsDelete,
-                          style: const TextStyle(color: AppColors.error600),
-                        ),
-                      ],
+                  onSelected: (value) => _onMenuAction(value, state.selectedEvent!),
+                  itemBuilder: (context) => [
+                    PopupMenuItem(
+                      value: 'edit',
+                      child: Row(
+                        children: [
+                          Icon(Icons.edit, size: 18.sp, color: AppColors.primaryColor600),
+                          SizedBox(width: 8.w),
+                          Text(AppTexts.eventsEdit),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              );
-            },
-          ),
+                    PopupMenuItem(
+                      value: 'delete',
+                      child: Row(
+                        children: [
+                          Icon(Icons.delete, size: 18.sp, color: AppColors.error600),
+                          SizedBox(width: 8.w),
+                          Text(
+                            AppTexts.eventsDelete,
+                            style: const TextStyle(color: AppColors.error600),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              },
+            )
+          else
+            SizedBox(width: 60.w),
         ],
       ),
     );

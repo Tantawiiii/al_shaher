@@ -4,7 +4,7 @@ description: "A new Flutter project."
 publish_to: 'none'
 
 
-version: 1.0.0+1
+version: 1.0.4+4
 
 environment:
   sdk: ^3.8.1
@@ -55,6 +55,7 @@ dependencies:
 
   cupertino_icons: ^1.0.8
   gal: ^2.3.2
+  equatable: ^2.0.8
 
 dev_dependencies:
   flutter_test:
@@ -72,5 +73,4 @@ flutter:
   assets:
     - assets/png/
     - assets/svg/
-
-
+    - assets/adi-registration.properties

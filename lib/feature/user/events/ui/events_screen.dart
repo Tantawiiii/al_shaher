@@ -2,10 +2,13 @@ import 'package:bounce/bounce.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import '../../../../core/constant/app_colors.dart';
 import '../../../../core/constant/app_texts.dart';
+import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/app_routes.dart';
+import '../../../../core/storage/auth_local_storage.dart';
 import '../cubit/events_cubit.dart';
 import '../cubit/events_state.dart';
 import '../data/event_model.dart';
@@ -19,6 +22,23 @@ class EventsScreen extends StatefulWidget {
 
 class _EventsScreenState extends State<EventsScreen> {
   DateTime _currentMonth = DateTime.now();
+  late final bool _isAdmin;
+  late final TextEditingController _searchController;
+  String _searchQuery = '';
+  bool _sortAscending = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _isAdmin = sl<AuthLocalStorage>().getAuthType() == 'admin';
+    _searchController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,8 +50,8 @@ class _EventsScreenState extends State<EventsScreen> {
         body: Column(
           children: [
             _buildAppBar(context),
-            _buildViewToggle(),
-            Expanded(child: _buildBody()),
+            if (_isAdmin) _buildAdminHeaderTools() else _buildViewToggle(),
+            Expanded(child: _isAdmin ? _buildAdminBody() : _buildBody()),
           ],
         ),
       ),
@@ -39,6 +59,7 @@ class _EventsScreenState extends State<EventsScreen> {
   }
 
   Widget _buildFab() {
+    if (!_isAdmin) return const SizedBox.shrink();
     return FloatingActionButton(
       onPressed: () {
         Navigator.pushNamed(context, AppRoutes.addEvent).then((_) {
@@ -107,6 +128,90 @@ class _EventsScreenState extends State<EventsScreen> {
           ),
           const Spacer(),
           SizedBox(width: 60.w),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAdminHeaderTools() {
+    return Container(
+      width: double.infinity,
+      color: AppColors.white,
+      padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 10.h),
+      child: Column(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: AppColors.neutral100,
+              borderRadius: BorderRadius.circular(12.r),
+            ),
+            child: TextField(
+              controller: _searchController,
+              onChanged: (value) => setState(() => _searchQuery = value.trim()),
+              textInputAction: TextInputAction.search,
+              decoration: InputDecoration(
+                hintText: AppTexts.treeSearchHint,
+                border: InputBorder.none,
+                contentPadding:
+                    EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+                prefixIcon: Icon(
+                  Icons.search,
+                  color: AppColors.neutral500,
+                  size: 22.sp,
+                ),
+              ),
+            ),
+          ),
+          SizedBox(height: 10.h),
+          Row(
+            children: [
+              Bounce(
+                onTap: () => setState(() => _sortAscending = !_sortAscending),
+                child: Container(
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 12.w, vertical: 7.h),
+                  decoration: BoxDecoration(
+                    color: AppColors.neutral100,
+                    borderRadius: BorderRadius.circular(14.r),
+                    border: Border.all(color: AppColors.neutral200),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.swap_vert_rounded,
+                        size: 16.sp,
+                        color: AppColors.neutral600,
+                      ),
+                      SizedBox(width: 6.w),
+                      Text(
+                        'ترتيب',
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.neutral700,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const Spacer(),
+              BlocBuilder<EventsCubit, EventsState>(
+                buildWhen: (p, c) => p.events != c.events,
+                builder: (_, state) {
+                  final visibleCount = _applyAdminFilters(state.events).length;
+                  return Text(
+                    '${AppTexts.events} ( $visibleCount )',
+                    style: TextStyle(
+                      fontSize: 15.sp,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.primaryColor600,
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
         ],
       ),
     );
@@ -251,6 +356,319 @@ class _EventsScreenState extends State<EventsScreen> {
         }
       },
     );
+  }
+
+  Widget _buildAdminBody() {
+    return BlocBuilder<EventsCubit, EventsState>(
+      builder: (context, state) {
+        switch (state.status) {
+          case EventsStatus.initial:
+          case EventsStatus.loading:
+            return _buildLoading();
+          case EventsStatus.error:
+            return _buildError(state.errorMessage ?? 'حدث خطأ');
+          case EventsStatus.loaded:
+            return _buildAdminList(state.events);
+        }
+      },
+    );
+  }
+
+  Widget _buildAdminList(List<EventModel> events) {
+    final filtered = _applyAdminFilters(events);
+    if (filtered.isEmpty) {
+      return Center(
+        child: Text(
+          _searchQuery.isEmpty ? AppTexts.eventsEmpty : 'لا توجد نتائج مطابقة',
+          style: TextStyle(fontSize: 14.sp, color: AppColors.neutral400),
+        ),
+      );
+    }
+
+    final grouped = _groupEventsByMonth(filtered);
+    return ListView.builder(
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+      itemCount: grouped.length,
+      itemBuilder: (context, index) {
+        final entry = grouped.entries.elementAt(index);
+        final month = entry.key;
+        final items = entry.value;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 10.h),
+              child: Text(
+                month,
+                style: TextStyle(
+                  fontSize: 26.sp,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.neutral900,
+                ),
+              ),
+            ),
+            ...items.map(_buildAdminEventCard),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildAdminEventCard(EventModel event) {
+    return Bounce(
+      onTap: () {
+        Navigator.pushNamed(
+          context,
+          AppRoutes.eventDetails,
+          arguments: event.id,
+        );
+      },
+      child: Container(
+        margin: EdgeInsets.only(bottom: 12.h),
+        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          borderRadius: BorderRadius.circular(14.r),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            _buildAdminItemMenu(event),
+            SizedBox(width: 10.w),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    event.name,
+                    style: TextStyle(
+                      fontSize: 17.sp,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.neutral900,
+                      height: 1.4,
+                    ),
+                  ),
+                  if (event.description != null &&
+                      event.description!.trim().isNotEmpty) ...[
+                    SizedBox(height: 3.h),
+                    Text(
+                      event.description!,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 13.sp,
+                        color: AppColors.neutral500,
+                        height: 1.5,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            SizedBox(width: 10.w),
+            _buildDateBadge(event.date),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAdminItemMenu(EventModel event) {
+    return PopupMenuButton<String>(
+      padding: EdgeInsets.zero,
+      icon: Icon(Icons.more_vert, color: AppColors.neutral500, size: 20.sp),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
+      onSelected: (value) {
+        if (value == 'edit') {
+          Navigator.pushNamed(context, AppRoutes.addEvent, arguments: event)
+              .then((_) => context.read<EventsCubit>().loadEvents());
+          return;
+        }
+        if (value == 'delete') {
+          _confirmDeleteFromList(event);
+        }
+      },
+      itemBuilder: (_) => [
+        PopupMenuItem<String>(
+          value: 'edit',
+          child: Row(
+            children: [
+              Icon(Icons.edit_outlined, color: AppColors.primaryColor600, size: 18.sp),
+              SizedBox(width: 8.w),
+              Text(AppTexts.eventsEdit),
+            ],
+          ),
+        ),
+        PopupMenuItem<String>(
+          value: 'delete',
+          child: Row(
+            children: [
+              Icon(Icons.delete_outline, color: AppColors.error600, size: 18.sp),
+              SizedBox(width: 8.w),
+              Text(
+                AppTexts.eventsDelete,
+                style: const TextStyle(color: AppColors.error600),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDateBadge(DateTime? date) {
+    if (date == null) {
+      return Container(
+        width: 58.w,
+        height: 62.h,
+        decoration: BoxDecoration(
+          color: AppColors.neutral200,
+          borderRadius: BorderRadius.circular(12.r),
+        ),
+      );
+    }
+    final months = [
+      '',
+      'يناير',
+      'فبراير',
+      'مارس',
+      'أبريل',
+      'مايو',
+      'يونيو',
+      'يوليو',
+      'أغسطس',
+      'سبتمبر',
+      'أكتوبر',
+      'نوفمبر',
+      'ديسمبر',
+    ];
+    return Container(
+      width: 58.w,
+      padding: EdgeInsets.symmetric(vertical: 8.h),
+      decoration: BoxDecoration(
+        color: AppColors.accentGold600,
+        borderRadius: BorderRadius.circular(12.r),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            '${date.day}',
+            style: TextStyle(
+              fontSize: 22.sp,
+              fontWeight: FontWeight.w700,
+              color: AppColors.white,
+            ),
+          ),
+          Text(
+            months[date.month],
+            style: TextStyle(
+              fontSize: 10.sp,
+              fontWeight: FontWeight.w600,
+              color: AppColors.white,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _confirmDeleteFromList(EventModel event) {
+    showDialog(
+      context: context,
+      builder: (dialogCtx) => Directionality(
+        textDirection: TextDirection.rtl,
+        child: AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
+          title: Text(
+            AppTexts.eventsDeleteConfirm,
+            style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
+          ),
+          content: Text(
+            AppTexts.eventsDeleteMessage,
+            style: TextStyle(fontSize: 14.sp),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogCtx),
+              child: Text(
+                AppTexts.eventsCancel,
+                style: TextStyle(color: AppColors.neutral500, fontSize: 14.sp),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(dialogCtx);
+                context.read<EventsCubit>().deleteEvent(event.id);
+                Fluttertoast.showToast(
+                  msg: 'تم حذف المناسبة بنجاح',
+                  backgroundColor: AppColors.success600,
+                );
+              },
+              child: Text(
+                AppTexts.eventsDelete,
+                style: TextStyle(color: AppColors.error600, fontSize: 14.sp),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  List<EventModel> _applyAdminFilters(List<EventModel> events) {
+    final query = _searchQuery.trim().toLowerCase();
+    final filtered = query.isEmpty
+        ? List<EventModel>.from(events)
+        : events.where((event) {
+            final name = event.name.toLowerCase();
+            final description = (event.description ?? '').toLowerCase();
+            final location = (event.location ?? '').toLowerCase();
+            final dateText = event.date != null ? _formatDate(event.date!) : '';
+            return name.contains(query) ||
+                description.contains(query) ||
+                location.contains(query) ||
+                dateText.toLowerCase().contains(query);
+          }).toList();
+
+    filtered.sort((a, b) {
+      final ad = a.date ?? DateTime(1970);
+      final bd = b.date ?? DateTime(1970);
+      return _sortAscending ? ad.compareTo(bd) : bd.compareTo(ad);
+    });
+    return filtered;
+  }
+
+  Map<String, List<EventModel>> _groupEventsByMonth(List<EventModel> events) {
+    final months = [
+      '',
+      'يناير',
+      'فبراير',
+      'مارس',
+      'أبريل',
+      'مايو',
+      'يونيو',
+      'يوليو',
+      'أغسطس',
+      'سبتمبر',
+      'أكتوبر',
+      'نوفمبر',
+      'ديسمبر',
+    ];
+    final map = <String, List<EventModel>>{};
+    for (final event in events) {
+      final key = event.date != null
+          ? '${months[event.date!.month]} ${event.date!.year}'
+          : 'بدون تاريخ';
+      map.putIfAbsent(key, () => []).add(event);
+    }
+    return map;
   }
 
   Widget _buildLoading() {

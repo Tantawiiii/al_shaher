@@ -26,8 +26,12 @@ class _SplashScreenState extends State<SplashScreen> {
     await Future<void>.delayed(const Duration(seconds: 3));
     if (!mounted) return;
 
-    final hasToken = sl<AuthLocalStorage>().hasToken;
-    final next = hasToken ? AppRoutes.home : AppRoutes.onBoarding;
+    final authStorage = sl<AuthLocalStorage>();
+    final hasToken = authStorage.hasToken;
+    final isAdmin = authStorage.getAuthType() == 'admin';
+    final next = hasToken
+        ? (isAdmin ? AppRoutes.adminHome : AppRoutes.home)
+        : AppRoutes.onBoarding;
 
     if (!mounted) return;
     Navigator.pushReplacementNamed(context, next);

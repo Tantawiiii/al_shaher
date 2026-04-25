@@ -1,4 +1,6 @@
 import 'package:al_shaher/feature/user/news/ui/widgets/news_list_card.dart';
+import 'package:al_shaher/core/di/injection_container.dart';
+import 'package:al_shaher/core/storage/auth_local_storage.dart';
 import 'package:bounce/bounce.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +25,13 @@ class NewsScreen extends StatefulWidget {
 class _NewsScreenState extends State<NewsScreen> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
+  late final bool _isAdmin;
+
+  @override
+  void initState() {
+    super.initState();
+    _isAdmin = sl<AuthLocalStorage>().getAuthType() == 'admin';
+  }
 
   @override
   void dispose() {
@@ -36,14 +45,16 @@ class _NewsScreenState extends State<NewsScreen> {
       textDirection: TextDirection.rtl,
       child: Scaffold(
         backgroundColor: AppColors.neutral50,
-        floatingActionButton: FloatingActionButton(
-          onPressed: () =>
-              Navigator.pushNamed(context, AppRoutes.addNews).then((_) {
-            context.read<NewsCubit>().loadNews();
-          }),
-          backgroundColor: AppColors.primaryColor600,
-          child: const Icon(Icons.add, color: AppColors.white),
-        ),
+        floatingActionButton: _isAdmin
+            ? FloatingActionButton(
+                onPressed: () =>
+                    Navigator.pushNamed(context, AppRoutes.addNews).then((_) {
+                  context.read<NewsCubit>().loadNews();
+                }),
+                backgroundColor: AppColors.primaryColor600,
+                child: const Icon(Icons.add, color: AppColors.white),
+              )
+            : null,
         body: Column(
           children: [
             _buildAppBar(context),
@@ -213,7 +224,7 @@ class _NewsScreenState extends State<NewsScreen> {
             itemCount: newsList.length,
             separatorBuilder: (_, __) => SizedBox(height: 12.h),
             itemBuilder: (context, index) =>
-                NewsListCard(news: newsList[index]),
+                NewsListCard(news: newsList[index], canManage: _isAdmin),
           ),
           SizedBox(height: 100.h),
         ],

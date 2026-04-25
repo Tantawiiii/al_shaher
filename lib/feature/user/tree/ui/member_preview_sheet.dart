@@ -142,9 +142,10 @@ class _MemberPreviewSheetState extends State<MemberPreviewSheet> {
     final url = _avatarUrl;
     final initials = _name.isNotEmpty ? _name[0] : '؟';
 
+    final size = 112.r;
     return Container(
-      width: 112.r,
-      height: 112.r,
+      width: size,
+      height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: AppColors.primaryColor200,
@@ -158,27 +159,36 @@ class _MemberPreviewSheetState extends State<MemberPreviewSheet> {
         ],
       ),
       clipBehavior: Clip.antiAlias,
-      child: url != null
-          ? CachedNetworkImage(
-              imageUrl: url,
-              fit: BoxFit.cover,
-              placeholder: (_, __) => _avatarFallback(initials),
-              errorWidget: (_, __, ___) => _avatarFallback(initials),
-            )
-          : _avatarFallback(initials),
+      child: ClipOval(
+        clipBehavior: Clip.antiAlias,
+        child: url != null
+            ? CachedNetworkImage(
+                imageUrl: url,
+                fit: BoxFit.cover,
+                alignment: Alignment.center,
+                width: size,
+                height: size,
+                placeholder: (_, __) => _avatarFallback(initials),
+                errorWidget: (_, __, ___) => _avatarFallback(initials),
+              )
+            : _avatarFallback(initials),
+      ),
     );
   }
 
   Widget _avatarFallback(String initials) {
-    return Container(
-      color: AppColors.primaryColor500,
-      alignment: Alignment.center,
-      child: Text(
-        initials,
-        style: TextStyle(
-          fontSize: 36.sp,
-          fontWeight: FontWeight.w700,
-          color: AppColors.white,
+    return SizedBox.expand(
+      child: ColoredBox(
+        color: AppColors.primaryColor500,
+        child: Center(
+          child: Text(
+            initials,
+            style: TextStyle(
+              fontSize: 46.sp,
+              fontWeight: FontWeight.w700,
+              color: AppColors.white,
+            ),
+          ),
         ),
       ),
     );
@@ -311,7 +321,7 @@ class _MemberPreviewSheetState extends State<MemberPreviewSheet> {
   Widget _buildViewProfileButton(BuildContext context) {
     return SizedBox(
       width: double.infinity,
-      height: 54.h,
+      height: 58.h,
       child: ElevatedButton(
         onPressed: () {
           Navigator.of(context).pop();

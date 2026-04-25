@@ -11,8 +11,14 @@ import 'package:al_shaher/feature/user/news/data/news_remote_data_source.dart';
 import 'package:al_shaher/feature/user/news/cubit/news_cubit.dart';
 import 'package:al_shaher/feature/user/members/data/members_remote_data_source.dart';
 import 'package:al_shaher/feature/user/members/cubit/members_cubit.dart';
+import 'package:al_shaher/feature/user/profile/cubit/profile_cubit.dart';
+import 'package:al_shaher/feature/user/profile/data/profile_remote_data_source.dart';
 import 'package:al_shaher/feature/user/requests/data/requests_remote_data_source.dart';
 import 'package:al_shaher/feature/user/requests/cubit/request_cubit.dart';
+import 'package:al_shaher/feature/admin/members/data/admin_members_remote_data_source.dart';
+import 'package:al_shaher/feature/admin/members/cubit/admin_members_cubit.dart';
+import 'package:al_shaher/feature/admin/permissions/data/admin_permissions_remote_data_source.dart';
+import 'package:al_shaher/feature/admin/permissions/cubit/admin_permissions_cubit.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -93,6 +99,36 @@ Future<void> configureDependencies() async {
   );
   sl.registerFactory<RequestCubit>(
     () => RequestCubit(sl<RequestsRemoteDataSource>()),
+  );
+
+  // Profile (GET /check-auth)
+  sl.registerLazySingleton<ProfileRemoteDataSource>(
+    () => ProfileRemoteDataSource(sl<NetworkService>(), sl<AuthLocalStorage>()),
+  );
+  sl.registerFactory<ProfileCubit>(
+    () => ProfileCubit(sl<ProfileRemoteDataSource>()),
+  );
+
+  // Admin members/orders
+  sl.registerLazySingleton<AdminMembersRemoteDataSource>(
+    () => AdminMembersRemoteDataSource(
+      sl<NetworkService>(),
+      sl<AuthLocalStorage>(),
+    ),
+  );
+  sl.registerFactory<AdminMembersCubit>(
+    () => AdminMembersCubit(sl<AdminMembersRemoteDataSource>()),
+  );
+
+  // Admin permissions
+  sl.registerLazySingleton<AdminPermissionsRemoteDataSource>(
+    () => AdminPermissionsRemoteDataSource(
+      sl<NetworkService>(),
+      sl<AuthLocalStorage>(),
+    ),
+  );
+  sl.registerFactory<AdminPermissionsCubit>(
+    () => AdminPermissionsCubit(sl<AdminPermissionsRemoteDataSource>()),
   );
 }
 
