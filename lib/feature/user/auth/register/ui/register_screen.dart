@@ -38,7 +38,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _nationalIdFocus = FocusNode();
 
   XFile? _pickedImage;
-  String _gender = 'male';
+  String? _gender;
 
   @override
   void dispose() {
@@ -101,7 +101,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (name.isEmpty ||
         nationalId.isEmpty ||
         phone.isEmpty ||
-        birth.isEmpty ||
         city.isEmpty ||
         password.isEmpty) {
       Fluttertoast.showToast(msg: AppTexts.registerValidationError);
@@ -117,7 +116,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       name: name,
       nationalId: nationalId,
       phoneDigits: phone,
-      dateOfBirthIso: _birthDateToIso(birth),
+      dateOfBirthIso: birth.isEmpty ? null : _birthDateToIso(birth),
       city: city,
       password: password,
       gender: _gender,
@@ -154,14 +153,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
-          '+966',
-          style: TextStyle(
-            fontSize: 15.sp,
-            fontWeight: FontWeight.w600,
-            color: AppColors.neutral700,
-          ),
-        ),
+        //Text(
+        //   '+966',
+        //   style: TextStyle(
+        //     fontSize: 15.sp,
+        //     fontWeight: FontWeight.w600,
+        //     color: AppColors.neutral700,
+        //   ),
+        // ),
         SizedBox(width: 8.w),
         Container(
           width: 1,
@@ -189,6 +188,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
           value: _gender,
+          hint: Align(
+            alignment: AlignmentDirectional.centerEnd,
+            child: Text(
+              AppTexts.fieldOptional,
+              style: TextStyle(fontSize: 15.sp, color: AppColors.neutral500),
+            ),
+          ),
           isExpanded: true,
           alignment: AlignmentDirectional.centerEnd,
           icon: Icon(

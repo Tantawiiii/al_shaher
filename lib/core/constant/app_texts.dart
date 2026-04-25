@@ -119,6 +119,7 @@ class AppTexts {
   static const String city =  'المدينة';
   static const String familyTree =  'شجرة العائلة';
   static const String events = 'المناسبات';
+  static const String members = 'الاعضاء';
   static const String news = 'الاخبار';
   static const String orderRequest = 'تقديم طلب';
   static const String myRequests = 'طلباتي';
@@ -144,6 +145,12 @@ class AppTexts {
   static const String treeExportWebUnsupported =
       'تصدير الشجرة إلى المعرض غير متاح على الويب';
   static const String home = 'الرئيسية';
+  static const String myProfile = 'الملف الشخصي';
+  static const String deleteAccount = 'حذف الحساب';
+  static const String deleteAccountConfirmTitle = 'تأكيد حذف الحساب';
+  static const String deleteAccountConfirmMessage =
+      'هل أنت متأكد من حذف الحساب؟ لا يمكن التراجع عن هذا الإجراء.';
+  static const String deleteAccountConfirmAction = 'تأكيد الحذف';
   static const String setting = 'الاعدادات';
   static const String logout = 'تسجيل خروج';
   static const String aboutApp = 'عن التطبيق';
@@ -255,6 +262,7 @@ class AppTexts {
 
   /// Shared validation / actions
   static const String fieldRequired = 'مطلوب';
+  static const String fieldOptional = 'اختياري';
 
   // Requests — submit add / update member (`RequestScreen`)
   static const String requestAddUpdateTitle = 'اضافة / تحديث حالة';
@@ -345,4 +353,24 @@ class AppTexts {
   static const String adminActivityLog = 'سجل الحركات';
   static const String adminStatistics = 'الإحصائيات';
   static const String adminRegisteredThisMonth = 'المسجلين لهذا الشهر';
+
+  // Admin Members
+  static const String adminFilterUnderReview = 'قيد المراجعة';
+  static const String adminFilterAccepted = 'مقبول';
+  static const String adminFilterRejected = 'مرفوض';
+  static const String adminNoSearchResults = 'لا توجد نتائج مطابقة';
+  static const String adminSort = 'ترتيب';
+  static const String adminError = 'حدث خطأ';
+  static const String adminFilterAll = 'الكل';
+  static const String adminFilterRecentlyJoined = 'منضمون حديثا';
+  static const String adminFilterBlocked = 'المحظورين';
+
+  // Admin Permissions UI
+  static const String adminPermissionsTitle = 'الادوار والصلاحيات';
+  static const String adminPermissionsSearchHint = 'بحث بالهوية الوطنية لاضافة اعضاء';
+  static const String adminPermissionsAssign = 'تعيين';
+  static const String adminPermissionsUsersWithPermissions = 'المستخدمين ذات صلاحيات';
+  static const String adminPermissionsSupervisor = 'مشرف';
+  static const String adminPermissionsManagement = 'الادارة';
+  static const String adminPermissionsChangeRole = 'تغيير الدور';
 }

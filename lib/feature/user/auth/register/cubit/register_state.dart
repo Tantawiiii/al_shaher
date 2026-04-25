@@ -19,7 +19,7 @@ class RegisterState {
     this.dateOfBirthIso = '',
     this.city = '',
     this.password = '',
-    this.gender = 'male',
+    this.gender,
     this.imageId,
     this.personalRelationships = const [],
     this.branchId,
@@ -35,7 +35,7 @@ class RegisterState {
   final String dateOfBirthIso;
   final String city;
   final String password;
-  final String gender;
+  final String? gender;
 
   final int? imageId;
   final List<String> personalRelationships;
@@ -46,7 +46,6 @@ class RegisterState {
       name.isNotEmpty &&
       nationalId.isNotEmpty &&
       phone.isNotEmpty &&
-      dateOfBirthIso.isNotEmpty &&
       city.isNotEmpty &&
       password.isNotEmpty &&
       imageId != null;
@@ -66,7 +65,7 @@ class RegisterState {
     String? dateOfBirthIso,
     String? city,
     String? password,
-    String? gender,
+    Object? gender = _noValue,
     int? imageId,
     List<String>? personalRelationships,
     int? branchId,
@@ -82,7 +81,7 @@ class RegisterState {
       dateOfBirthIso: dateOfBirthIso ?? this.dateOfBirthIso,
       city: city ?? this.city,
       password: password ?? this.password,
-      gender: gender ?? this.gender,
+      gender: identical(gender, _noValue) ? this.gender : gender as String?,
       imageId: imageId ?? this.imageId,
       personalRelationships:
           personalRelationships ?? this.personalRelationships,
@@ -91,3 +90,5 @@ class RegisterState {
     );
   }
 }
+
+const Object _noValue = Object();

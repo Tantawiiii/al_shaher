@@ -1,8 +1,8 @@
 import 'package:al_shaher/core/constant/app_texts.dart';
+import 'package:bounce/bounce.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
-import '../../../../core/constant/app_assets.dart';
+import '../../../../core/routing/app_routes.dart';
 import '../../../../core/constant/app_colors.dart';
 
 class AdminHomeScreen extends StatelessWidget {
@@ -33,7 +33,7 @@ class AdminHomeScreen extends StatelessWidget {
                     padding: EdgeInsets.all(20.w),
                     child: Column(
                       children: [
-                        _buildGrid(),
+                        _buildGrid(context),
                         SizedBox(height: 20.h),
                         _buildStatisticsCard(),
                         SizedBox(height: 20.h),
@@ -53,12 +53,8 @@ class AdminHomeScreen extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 15.h),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.notifications_none_rounded, color: Colors.white, size: 28.sp),
-          ),
           Text(
             AppTexts.adminDashboardTitle,
             style: TextStyle(
@@ -67,29 +63,33 @@ class AdminHomeScreen extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-          IconButton(
-            onPressed: () {},
-            icon: SvgPicture.asset(
-              AppAssets.menuIcon,
-              colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
-              width: 24.w,
-            ),
-          ),
+          // IconButton(
+          //   onPressed: () {},
+          //   icon: SvgPicture.asset(
+          //     AppAssets.menuIcon,
+          //     colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+          //     width: 24.w,
+          //   ),
+          // ),
         ],
       ),
     );
   }
 
-  Widget _buildGrid() {
+  Widget _buildGrid(BuildContext context) {
     final items = [
-      {'title': AppTexts.adminJoinRequests, 'icon': Icons.account_tree_outlined},
-      {'title': AppTexts.adminUpdateStatus, 'icon': Icons.layers_outlined},
+      {
+        'title': AppTexts.adminJoinRequests,
+        'icon': Icons.account_tree_outlined,
+      },
+      {'title': AppTexts.familyTree, 'icon': Icons.account_tree_rounded},
+      // {'title': AppTexts.adminUpdateStatus, 'icon': Icons.layers_outlined},
       {'title': AppTexts.news, 'icon': Icons.description_outlined},
       {'title': AppTexts.events, 'icon': Icons.edit_note_rounded},
-      {'title': 'الاعضاء', 'icon': Icons.people_outline_rounded},
+      {'title': AppTexts.members, 'icon': Icons.people_outline_rounded},
       {'title': AppTexts.adminPermissions, 'icon': Icons.lock_person_outlined},
-      {'title': AppTexts.adminActivityLog, 'icon': Icons.manage_search_rounded},
-      {'title': AppTexts.notificationsTitle, 'icon': Icons.notifications_active_outlined},
+      // {'title': AppTexts.adminActivityLog, 'icon': Icons.manage_search_rounded},
+       {'title': AppTexts.notificationsTitle, 'icon': Icons.notifications_active_outlined},
       {'title': AppTexts.setting, 'icon': Icons.settings_outlined},
     ];
 
@@ -104,40 +104,69 @@ class AdminHomeScreen extends StatelessWidget {
       ),
       itemCount: items.length,
       itemBuilder: (context, index) {
+        final title = items[index]['title'] as String;
         return _buildGridItem(
-            items[index]['title'] as String, items[index]['icon'] as IconData);
+          title,
+          items[index]['icon'] as IconData,
+          () => _onGridItemTap(context, title),
+        );
       },
     );
   }
 
-  Widget _buildGridItem(String title, IconData icon) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, color: AppColors.accentGold600, size: 35.sp),
-          SizedBox(height: 10.h),
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 14.sp,
-              fontWeight: FontWeight.w600,
-              color: AppColors.primaryColor900,
+  void _onGridItemTap(BuildContext context, String title) {
+    if (title == AppTexts.news) {
+      Navigator.pushNamed(context, AppRoutes.adminNews);
+    } else if (title == AppTexts.events) {
+      Navigator.pushNamed(context, AppRoutes.adminEvents);
+    }
+    // else if (title == AppTexts.adminUpdateStatus) {
+    //   Navigator.pushNamed(context, AppRoutes.adminOrders);
+    // }
+    else if (title == AppTexts.adminJoinRequests) {
+      Navigator.pushNamed(context, AppRoutes.adminOrders);
+    } else if (title == AppTexts.familyTree) {
+      Navigator.pushNamed(context, AppRoutes.familyTree);
+    } else if (title == AppTexts.members) {
+      Navigator.pushNamed(context, AppRoutes.adminMembers);
+    } else if (title == AppTexts.setting) {
+      Navigator.pushNamed(context, AppRoutes.adminSettings);
+    } else if (title == AppTexts.adminPermissions) {
+      Navigator.pushNamed(context, AppRoutes.adminPermissions);
+    }
+  }
+
+  Widget _buildGridItem(String title, IconData icon, VoidCallback onClick) {
+    return Bounce(
+      onTap: onClick,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(15.r),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.03),
+              blurRadius: 10,
+              offset: const Offset(0, 5),
             ),
-          ),
-        ],
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: AppColors.accentGold600, size: 35.sp),
+            SizedBox(height: 10.h),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w600,
+                color: AppColors.primaryColor900,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -158,8 +187,11 @@ class AdminHomeScreen extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Icon(Icons.bar_chart_rounded,
-                      color: Colors.white, size: 24.sp),
+                  Icon(
+                    Icons.bar_chart_rounded,
+                    color: Colors.white,
+                    size: 24.sp,
+                  ),
                   SizedBox(width: 8.w),
                   Text(
                     AppTexts.adminStatistics,

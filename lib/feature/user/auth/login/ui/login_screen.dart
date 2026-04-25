@@ -29,14 +29,14 @@ class _LoginScreenState extends State<LoginScreen> {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
-          '+966',
-          style: TextStyle(
-            fontSize: 15.sp,
-            fontWeight: FontWeight.w600,
-            color: AppColors.neutral700,
-          ),
-        ),
+        // Text(
+        //   '+966',
+        //   style: TextStyle(
+        //     fontSize: 15.sp,
+        //     fontWeight: FontWeight.w600,
+        //     color: AppColors.neutral700,
+        //   ),
+        // ),
         SizedBox(width: 8.w),
         Container(
           width: 1,

@@ -11,7 +11,7 @@ class ApplicationFormSummary {
     required this.phone,
     required this.dateOfBirthIso,
     required this.city,
-    required this.gender,
+    this.gender,
     required this.imageId,
     required this.personalRelationships,
     required this.branchId,
@@ -26,7 +26,7 @@ class ApplicationFormSummary {
   final String phone;
   final String dateOfBirthIso;
   final String city;
-  final String gender;
+  final String? gender;
   final int imageId;
   final List<String> personalRelationships;
   final int branchId;

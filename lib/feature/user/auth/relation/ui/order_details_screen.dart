@@ -12,7 +12,10 @@ class OrderDetailsScreen extends StatelessWidget {
 
   final ApplicationFormSummary summary;
 
-  String _genderLabel(String code) {
+  String _genderLabel(String? code) {
+    if (code == null || code.isEmpty) {
+      return '—';
+    }
     switch (code) {
       case 'female':
         return AppTexts.orderDetailsGenderFemale;

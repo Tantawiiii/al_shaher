@@ -8,7 +8,9 @@ import 'package:shimmer/shimmer.dart';
 
 import '../../../../core/constant/app_colors.dart';
 import '../../../../core/constant/app_texts.dart';
+import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/app_routes.dart';
+import '../../../../core/storage/auth_local_storage.dart';
 import '../cubit/news_cubit.dart';
 import '../cubit/news_state.dart';
 import '../data/news_model.dart';
@@ -23,9 +25,12 @@ class NewsDetailScreen extends StatefulWidget {
 }
 
 class _NewsDetailScreenState extends State<NewsDetailScreen> {
+  late final bool _isAdmin;
+
   @override
   void initState() {
     super.initState();
+    _isAdmin = sl<AuthLocalStorage>().getAuthType() == 'admin';
     context.read<NewsCubit>().loadNewsDetails(widget.newsId);
   }
 
@@ -259,7 +264,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
                   ],
                 ),
               ),
-              _buildPopupMenu(context, news),
+              if (_isAdmin) _buildPopupMenu(context, news),
             ],
           ),
         ),
@@ -285,7 +290,8 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
               .then((_) {
             context.read<NewsCubit>().loadNewsDetails(widget.newsId);
           });
-        } else if (value == 'delete') {
+        }
+        else if (value == 'delete') {
           _confirmDelete(context, news);
         }
       },

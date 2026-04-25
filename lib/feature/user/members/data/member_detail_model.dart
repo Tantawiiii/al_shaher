@@ -1,5 +1,8 @@
 import 'package:flutter/foundation.dart';
 
+import '../../../../core/utils/media_url.dart';
+import '../../tree/data/tree_member_model.dart';
+
 @immutable
 class BranchInfo {
   const BranchInfo({required this.id, required this.name});
@@ -66,7 +69,7 @@ class MemberDetailModel {
   final bool active;
   final String? personalRelationships;
   final String? imageUrl;
-  final int? image;
+  final TreeMemberImageModel? image;
   final BranchInfo? branch;
   final FatherInfo? father;
   final bool dead;
@@ -87,11 +90,32 @@ class MemberDetailModel {
     final childrenList = <MemberDetailModel>[];
     if (rawChildren is List) {
       for (final item in rawChildren) {
-        if (item is Map<String, dynamic>) {
-          childrenList.add(MemberDetailModel.fromJson(item));
+        if (item is Map) {
+          childrenList.add(
+            MemberDetailModel.fromJson(Map<String, dynamic>.from(item)),
+          );
         }
       }
     }
+
+    TreeMemberImageModel? imageModel;
+    final rawImage = json['image'];
+    if (rawImage is Map<String, dynamic>) {
+      imageModel = TreeMemberImageModel.fromJson(rawImage);
+    } else if (rawImage is Map) {
+      imageModel = TreeMemberImageModel.fromJson(
+        Map<String, dynamic>.from(rawImage),
+      );
+    }
+
+    final top = json['imageUrl']?.toString().trim();
+    final topNorm =
+        (top != null && top.isNotEmpty) ? normalizeMediaUrl(top) : null;
+    final fromNested =
+        galleryImageUrl(imageModel?.fullUrl, imageModel?.previewUrl);
+    final resolvedImageUrl = (topNorm != null && topNorm.isNotEmpty)
+        ? topNorm
+        : fromNested;
 
     return MemberDetailModel(
       id: (json['id'] as num).toInt(),
@@ -106,8 +130,8 @@ class MemberDetailModel {
       wifeName: json['wife_name']?.toString(),
       active: json['active'] == true,
       personalRelationships: json['personal_relationships']?.toString(),
-      imageUrl: json['imageUrl']?.toString(),
-      image: (json['image'] as num?)?.toInt(),
+      imageUrl: resolvedImageUrl,
+      image: imageModel,
       branch: branch,
       father: father,
       dead: json['dead'] == true,

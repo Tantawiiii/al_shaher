@@ -17,10 +17,13 @@ class ApiEndpoints {
   static const String branchIndex = '/branch/index';
   static const String member = '/member';
   static const String memberIndex = '/member/index';
+  static const String memberDelete = '/member/delete';
   static const String login = '/login';
   static const String membersTree = '/members/tree';
   static const String checkAuth = '/check-auth';
   static const String addMemberPublic = '/add-member-public';
+  static const String myCreatedMembers = '/my-created-members';
+  static const String userDeleteAccount = '/delete-account';
 
   // Events
   static const String event = '/event';
@@ -32,4 +35,8 @@ class ApiEndpoints {
   static const String news = '/news';
   static const String newsIndex = '/news/index';
   static const String newsDelete = '/news/delete';
+
+  // Admin Permissions
+  static const String adminIndex = '/admin/index';
+  static const String admin = '/admin';
 }

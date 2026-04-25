@@ -12,6 +12,7 @@ final class AppRoutes {
 
   // Members
   static const String memberProfile = '/memberProfile';
+  static const String myProfile = '/myProfile';
 
   // News
   static const String news = '/news';
@@ -20,10 +21,18 @@ final class AppRoutes {
   static const String notifications = '/notifications';
 
   static const String submitRequest = '/submitRequest';
+  static const String myRequests = '/myRequests';
 
   static const String settings = '/settings';
   static const String aboutAppDetail = '/aboutAppDetail';
 
   // Admin
   static const String adminHome = '/adminHome';
+  static const String adminEvents = '/adminEvents';
+  static const String adminNews = '/adminNews';
+  static const String adminOrders = '/adminOrders';
+  static const String adminMembers = '/adminMembers';
+  static const String adminMemberDetails = '/adminMemberDetails';
+  static const String adminSettings = '/adminSettings';
+  static const String adminPermissions = '/adminPermissions';
 }

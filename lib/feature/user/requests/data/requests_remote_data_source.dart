@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import '../../../../core/network/api_constants.dart';
 import '../../../../core/network/network_service.dart';
 import '../../../../core/storage/auth_local_storage.dart';
+import 'my_created_member_model.dart';
 
 class RequestsRemoteDataSource {
   RequestsRemoteDataSource(this._network, this._auth);
@@ -49,6 +50,35 @@ class RequestsRemoteDataSource {
         data: body,
         options: _authOptions,
       );
+    } on DioException catch (e) {
+      throw Exception(_messageFromDio(e));
+    }
+  }
+
+  /// GET /my-created-members
+  Future<List<MyCreatedMemberModel>> fetchMyCreatedMembers() async {
+    try {
+      final res = await _network.client.get<Map<String, dynamic>>(
+        ApiEndpoints.myCreatedMembers,
+        options: _authOptions,
+      );
+
+      final body = res.data;
+      if (body == null) {
+        throw Exception('استجابة غير صالحة');
+      }
+
+      final rawData = body['data'];
+      if (rawData is! List) {
+        throw Exception('استجابة غير صالحة');
+      }
+
+      return rawData
+          .whereType<Map>()
+          .map(
+            (e) => MyCreatedMemberModel.fromJson(Map<String, dynamic>.from(e)),
+          )
+          .toList(growable: false);
     } on DioException catch (e) {
       throw Exception(_messageFromDio(e));
     }
